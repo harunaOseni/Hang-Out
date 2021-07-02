@@ -1,10 +1,12 @@
-import React from 'react';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import { LoginPage } from "./Components";
 
 function App() {
+  const [user, setUser] = useState(false);
   return (
     <div className="app">
-      <h1>HI This is hangout!</h1>
+      {!user ? <LoginPage /> : <h1> Welcome to HangOut Enjoy!</h1>}
     </div>
   );
 }
