@@ -5,9 +5,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import { googleProvider, auth } from "../../Firebase/firebase";
-import { useSelector, useDispatch } from "react-redux";
-import { setAuthUser, logAuthUser } from "../../features/User/UserSlice";
-import { selectUser } from "../../features/User/UserSlice";
 
 // Note: makeStyles is a function that allows you to use
 // JavaScript to style your components
@@ -20,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     display: "flex",
     justifyContent: "center",
+    alignItems: "center",
   },
   paper: {
     display: "flex",
@@ -45,30 +43,6 @@ const useStyles = makeStyles((theme) => ({
 
 function LoginPage() {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const currentlySignedInUser = useSelector(selectUser);
-  console.log("currentlySignedInUser", currentlySignedInUser);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((userAuth) => {
-      if (userAuth) {
-        dispatch(
-          setAuthUser({
-            uid: userAuth.uid,
-            displayName: userAuth.displayName,
-            photoURL: userAuth.photoURL,
-            email: userAuth.email,
-          })
-        );
-      } else {
-        dispatch(logAuthUser());
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   const handleUserSignIn = () => {
     auth
@@ -92,7 +66,7 @@ function LoginPage() {
           alt="signup img"
         />
         <Typography variant="h4" style={{ paddingTop: "15px" }}>
-          Wanna Hangout ?
+          Wanna Hangout?
         </Typography>
         <Button
           variant="outlined"
