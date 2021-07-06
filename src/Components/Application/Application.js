@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
-import { CssBaseline } from "@material-ui/core/CssBaseline";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
@@ -14,7 +14,11 @@ import Menu from "@material-ui/core/Menu";
 import Badge from "@material-ui/core/Badge";
 import Avatar from "@material-ui/core/Avatar";
 import { Grid } from "@material-ui/core";
-import { auth } from "../../Firebase/firebase";
+import { Link } from "react-router-dom";
+import Drawer from "@material-ui/core/Drawer";
+import { GoSignOut } from "react-icons/go";
+import { FaUserEdit } from "react-icons/fa";
+import { auth, database } from "../../Firebase/firebase";
 
 const drawerWidth = 240;
 
@@ -81,15 +85,50 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "12px",
     paddingTop: "8px",
   },
+  root: {
+    display: "flex",
+  },
+  appBar: {
+    [theme.breakpoints.up("sm")]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    },
+    backgroundColor: "#14265E",
+    color: "#dcddde",
+    boxShadow: 
+        "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05);",
+    
+}, 
+   menuButton: {
+       marginRight: theme.spacing(2)
+       [theme.breakpoints.up("sm")]: {
+           display: "none",
+       }
+   }
+
 }));
 
-function Application({ currentlySignedInUser }) {
+function Application({ userId, window }) {
   const classes = useStyles();
+  const [userDetails, setUserDetails] = useState([]);
+
+  useEffect(() => {
+    database
+      .collection("users")
+      .doc(userId)
+      .onSnapshot((doc) => {
+        setUserDetails(doc.data());
+        localStorage.setItem("userDetails", JSON.stringify(doc.data()));
+      });
+  }, [userId]);
+
   const handleSignOut = () => {
     auth.signOut();
   };
-  const drawer = currentlySignedInUser && (
-    <div style={{maxWidth:"290px", backgroundColor: "#14265E", height: "100vh"}}>
+  const drawer = userDetails && (
+    <div
+      style={{ maxWidth: "290px", backgroundColor: "#14265E", height: "100vh" }}
+    >
       <Toolbar className={classes.sideToolBar}>
         <img
           src={
@@ -113,28 +152,98 @@ function Application({ currentlySignedInUser }) {
             }}
             variant="dot"
           >
-            <Avatar
-              alt={currentlySignedInUser.name}
-              src={currentlySignedInUser.photoURL}
-            />
+            <Avatar alt={userDetails.name} src={userDetails.photoUrl} />
           </StyledBadge>
           <Typography variant="h6" className={classes.avatarDisplayName}>
-            {currentlySignedInUser.displayName}
+            {userDetails.displayName}
           </Typography>
         </div>
         <div>
           <Typography variant="h4" className={classes.avatarName}>
-            {currentlySignedInUser.displayName}
+            {userDetails.name}
           </Typography>
           <Typography variant="h4" className={classes.avatarName}>
-            {currentlySignedInUser.email}
+            {userDetails.email}
           </Typography>
         </div>
       </Grid>
       <Divider />
     </div>
   );
-  return <div>{drawer}</div>;
+  return (
+    <div className={classes.root}>
+      <CssBaseline />
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar style={{ minHeight: "50px" }}>
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={"handleDrawerToggle"}
+            className={classes.menuButton}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            <h3 to="/" style={{ textDecoration: "none", color: "#dcddde" }}>
+              Home
+            </h3>
+          </Typography>
+
+          <div>
+            <IconButton
+              onClick={"a handle menu function goes in here..."}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu>
+              <MenuItem onClick={"a function goes in here"}>
+                <FaUserEdit /> &nbsp; Edit Profile
+              </MenuItem>
+
+              <MenuItem onClick={"a function goes in here"}>
+                <GoSignOut /> &nbsp; Sign Out of Hangout
+              </MenuItem>
+            </Menu>
+          </div>
+        </Toolbar>
+      </AppBar>
+
+      <nav className={classes.drawer}>
+        <Hidden smUp>
+          <Drawer
+            container={"container variable goes in here"}
+            variant="temporary"
+            anchor={"anchor goes in here"}
+            open={"something goes in here also"}
+            onClose={"a function goes in here"}
+            classes={
+              {
+                //a style goes in here
+              }
+            }
+            ModalProps={{
+              keepMounted: true,
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+
+        <Hidden xsDown implementation="css">
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+      </nav>
+    </div>
+  );
 }
 
 export default Application;
