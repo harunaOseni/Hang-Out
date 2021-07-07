@@ -54,11 +54,11 @@ const useStyles = makeStyles((theme) => ({
   sideToolBar: {
     display: "flex",
     width: drawerWidth,
-    backgroundColor: "#14265E",
+    backgroundColor: "rgba(43, 72, 158, 0.946)",
     color: "#dcddde",
   },
   sideToolBarImage: {
-    height: "32px",
+    height: "35px",
   },
   sideToolBarText: {
     letterSpacing: "0.2em",
@@ -92,25 +92,48 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
+      padding: "7.5px",
+      //   height: "65px",
     },
-    backgroundColor: "#14265E",
+    backgroundColor: "rgba(43, 72, 158, 0.99)",
     color: "#dcddde",
-    boxShadow: 
-        "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05);",
-    
-}, 
-   menuButton: {
-       marginRight: theme.spacing(2)
-       [theme.breakpoints.up("sm")]: {
-           display: "none",
-       }
-   }
+    boxShadow:
+      "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05);",
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
+    },
+  },
 
+  title: {
+    flex: "1",
+  },
+
+  drawer: {
+    [theme.breakpoints.up("sm")]: {
+      width: drawerWidth,
+      flex: 0,
+    },
+  },
+
+  drawerPaper: {
+    width: drawerWidth,
+    backgroundColor: "rgba(43, 72, 158, 0.99)",
+    color: "#dcddde",
+    overflowX: "hidden",
+  },
 }));
 
 function Application({ userId, window }) {
   const classes = useStyles();
   const [userDetails, setUserDetails] = useState([]);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  function handleDrawerToggle() {
+    setMobileOpen(!mobileOpen);
+  }
 
   useEffect(() => {
     database
@@ -126,9 +149,7 @@ function Application({ userId, window }) {
     auth.signOut();
   };
   const drawer = userDetails && (
-    <div
-      style={{ maxWidth: "290px", backgroundColor: "#14265E", height: "100vh" }}
-    >
+    <div>
       <Toolbar className={classes.sideToolBar}>
         <img
           src={
@@ -178,7 +199,7 @@ function Application({ userId, window }) {
           <IconButton
             color="inherit"
             edge="start"
-            onClick={"handleDrawerToggle"}
+            onClick={handleDrawerToggle}
             className={classes.menuButton}
           >
             <MenuIcon />
@@ -190,10 +211,7 @@ function Application({ userId, window }) {
           </Typography>
 
           <div>
-            <IconButton
-              onClick={"a handle menu function goes in here..."}
-              color="inherit"
-            >
+            <IconButton onClick={handleDrawerToggle} color="inherit">
               <AccountCircle />
             </IconButton>
             <Menu>
@@ -212,16 +230,13 @@ function Application({ userId, window }) {
       <nav className={classes.drawer}>
         <Hidden smUp>
           <Drawer
-            container={"container variable goes in here"}
             variant="temporary"
-            anchor={"anchor goes in here"}
-            open={"something goes in here also"}
-            onClose={"a function goes in here"}
-            classes={
-              {
-                //a style goes in here
-              }
-            }
+            anchor={"left"}
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
             ModalProps={{
               keepMounted: true,
             }}
@@ -230,13 +245,13 @@ function Application({ userId, window }) {
           </Drawer>
         </Hidden>
 
-        <Hidden xsDown implementation="css">
+        <Hidden xsDown>
           <Drawer
+            variant="permanent"
+            open
             classes={{
               paper: classes.drawerPaper,
             }}
-            variant="permanent"
-            open
           >
             {drawer}
           </Drawer>
