@@ -11,7 +11,7 @@ import { googleProvider, auth } from "../../Firebase/firebase";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(6),
     boxShadow: "0 0 15px rgb(7 15 63 / 33%)",
     backgroundColor: "rgb(45,74,164, 0.85)",
     color: "white",
@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   paper: {
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

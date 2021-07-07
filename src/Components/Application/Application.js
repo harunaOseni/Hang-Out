@@ -19,6 +19,10 @@ import Drawer from "@material-ui/core/Drawer";
 import { GoSignOut } from "react-icons/go";
 import { FaUserEdit } from "react-icons/fa";
 import { auth, database } from "../../Firebase/firebase";
+import Snackbar from "@material-ui/core/Snackbar";
+import Fade from "@material-ui/core/Fade";
+import CloseIcon from "@material-ui/icons/Close";
+import { SnackbarContent } from "@material-ui/core";
 
 const drawerWidth = 240;
 
@@ -56,6 +60,8 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     backgroundColor: "rgba(43, 72, 158, 0.946)",
     color: "#dcddde",
+    boxShadow:
+      "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05);",
   },
   sideToolBarImage: {
     height: "35px",
@@ -70,6 +76,8 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "5px",
     paddingBottom: "20px",
     color: "#fff",
+    boxShadow:
+      "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05);",
   },
   avatarIcon: {
     display: "flex",
@@ -92,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      padding: "7.5px",
+      padding: "7.1px",
       //   height: "65px",
     },
     backgroundColor: "rgba(43, 72, 158, 0.99)",
@@ -126,13 +134,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Application({ userId, window }) {
+function Application({ userId }) {
   const classes = useStyles();
   const [userDetails, setUserDetails] = useState([]);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [alert, setAlert] = useState(true);
+  const open = Boolean(anchorEl);
 
   function handleDrawerToggle() {
     setMobileOpen(!mobileOpen);
+  }
+
+  function handleMenu(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleAlert() {
+    setAlert(!alert);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
   }
 
   useEffect(() => {
@@ -194,6 +217,43 @@ function Application({ userId, window }) {
   return (
     <div className={classes.root}>
       <CssBaseline />
+
+      {/* <Snackbar
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        open={alert}
+        TransitionComponent={Fade}
+        message="Profile Edited Succesfully"
+        action={
+          <IconButton color="inherit" onClick={handleAlert}>
+            <CloseIcon />
+          </IconButton>
+        }
+        />  */}
+
+      <Snackbar
+        open={alert}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        TransitionComponent={Fade}
+      >
+        <SnackbarContent
+        style={{
+            backgroundColor: "#191751",
+         }}
+          action={
+            <IconButton color="inherit" onClick={handleAlert}>
+              <CloseIcon />
+            </IconButton>
+          }
+          message="Profile Edited Succesfully"
+        />
+      </Snackbar>
+
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar style={{ minHeight: "50px" }}>
           <IconButton
@@ -211,16 +271,25 @@ function Application({ userId, window }) {
           </Typography>
 
           <div>
-            <IconButton onClick={handleDrawerToggle} color="inherit">
+            <IconButton onClick={handleMenu} color="inherit">
               <AccountCircle />
             </IconButton>
-            <Menu>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              open={open}
+              onClose={handleClose}
+            >
               <MenuItem onClick={"a function goes in here"}>
                 <FaUserEdit /> &nbsp; Edit Profile
               </MenuItem>
 
-              <MenuItem onClick={"a function goes in here"}>
-                <GoSignOut /> &nbsp; Sign Out of Hangout
+              <MenuItem onClick={handleSignOut}>
+                <GoSignOut /> &nbsp; Sign Out Of Hangout
               </MenuItem>
             </Menu>
           </div>

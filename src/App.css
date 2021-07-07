@@ -1,4 +1,5 @@
 body {
-    background-color: rgba(43, 72, 158, 0.946);
+    background-color: rgba(43, 72, 158, 0.946) !important;
     height: 100vh;
+    overflow: hidden;
 }
