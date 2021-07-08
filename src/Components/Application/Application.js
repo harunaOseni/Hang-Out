@@ -23,6 +23,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Fade from "@material-ui/core/Fade";
 import CloseIcon from "@material-ui/icons/Close";
 import { SnackbarContent } from "@material-ui/core";
+import EditProfileDialog from "../EditProfileDialog/EditProfileDialog";
 
 const drawerWidth = 240;
 
@@ -139,7 +140,8 @@ function Application({ userId }) {
   const [userDetails, setUserDetails] = useState([]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [alert, setAlert] = useState(true);
+  const [alert, setAlert] = useState(false);
+  const [editProfileModal, setEditProfileModal] = useState(false);
   const open = Boolean(anchorEl);
 
   function handleDrawerToggle() {
@@ -156,6 +158,10 @@ function Application({ userId }) {
 
   function handleClose() {
     setAnchorEl(null);
+  }
+
+  function handleEditProfile() {
+    setEditProfileModal(!editProfileModal);
   }
 
   useEffect(() => {
@@ -218,21 +224,6 @@ function Application({ userId }) {
     <div className={classes.root}>
       <CssBaseline />
 
-      {/* <Snackbar
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        open={alert}
-        TransitionComponent={Fade}
-        message="Profile Edited Succesfully"
-        action={
-          <IconButton color="inherit" onClick={handleAlert}>
-            <CloseIcon />
-          </IconButton>
-        }
-        />  */}
-
       <Snackbar
         open={alert}
         anchorOrigin={{
@@ -242,9 +233,9 @@ function Application({ userId }) {
         TransitionComponent={Fade}
       >
         <SnackbarContent
-        style={{
+          style={{
             backgroundColor: "#191751",
-         }}
+          }}
           action={
             <IconButton color="inherit" onClick={handleAlert}>
               <CloseIcon />
@@ -253,6 +244,13 @@ function Application({ userId }) {
           message="Profile Edited Succesfully"
         />
       </Snackbar>
+
+      {editProfileModal ? (
+        <EditProfileDialog
+          handleEditProfileToggle={handleEditProfile}
+          handleSnackbarToggle={handleAlert}
+        />
+      ) : null}
 
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar style={{ minHeight: "50px" }}>
@@ -284,7 +282,7 @@ function Application({ userId }) {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={"a function goes in here"}>
+              <MenuItem onClick={handleEditProfile}>
                 <FaUserEdit /> &nbsp; Edit Profile
               </MenuItem>
 
