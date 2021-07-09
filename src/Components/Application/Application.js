@@ -282,11 +282,17 @@ function Application({ userId }) {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleEditProfile}>
+              <MenuItem
+                onClick={handleEditProfile}
+                style={{ color: "rgba(43, 72, 158, 0.99)" }}
+              >
                 <FaUserEdit /> &nbsp; Edit Profile
               </MenuItem>
 
-              <MenuItem onClick={handleSignOut}>
+              <MenuItem
+                onClick={handleSignOut}
+                style={{ color: "rgba(43, 72, 158, 0.99)" }}
+              >
                 <GoSignOut /> &nbsp; Sign Out Of Hangout
               </MenuItem>
             </Menu>
