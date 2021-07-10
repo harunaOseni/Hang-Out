@@ -81,9 +81,6 @@ function EditProfileDialog({ handleEditProfileToggle, handleSnackbarToggle }) {
 
   function updateUserProfile(event) {
     event.preventDefault();
-    const uploadTask = storage
-      .ref(`profilePictures/${profilePictureFile.name}`)
-      .put(profilePictureFile);
     database
       .collection("users")
       .doc(userId)
@@ -94,32 +91,36 @@ function EditProfileDialog({ handleEditProfileToggle, handleSnackbarToggle }) {
         console.log(error);
       });
 
-    uploadTask.on(
-      (error) => {
-        if (error) {
-          console.log(error);
+    if (profilePictureFile !== null) {
+      const uploadTask = storage
+        .ref(`profilePictures/${profilePictureFile.name}`)
+        .put(profilePictureFile);
+      uploadTask.on(
+        (error) => {
+          if (error) {
+            console.log(error);
+          }
+        },
+        () => {
+          storage
+            .ref("profilePictures")
+            .child(profilePictureFile.name)
+            .getDownloadURL()
+            .then((url) => {
+              database
+                .collection("users")
+                .doc(userId)
+                .update({
+                  photoUrl: url,
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            });
         }
-      },
-      () => {
-        storage
-          .ref("profilePictures")
-          .child(profilePictureFile.name)
-          .getDownloadURL()
-          .then((url) => {
-            database
-              .collection("users")
-              .doc(userId)
-              .update({
-                photoUrl: url,
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          });
-      }
-    );
-
-    setProfilePictureFile(null);
+      );
+      setProfilePictureFile(null);
+    }
     handleSnackbarToggle();
     setOpen(false);
     handleEditProfileToggle();

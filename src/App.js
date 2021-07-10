@@ -4,6 +4,7 @@ import { LoginPage } from "./Components";
 import { Application } from "./Components";
 import { auth, database } from "./Firebase/firebase";
 import { makeStyles } from "@material-ui/core/styles";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,6 +59,7 @@ function App() {
 
   return (
     <div className="app">
+      <Router>
       {!currentlySignedInUser ? (
         <LoginPage />
       ) : (
@@ -65,6 +67,7 @@ function App() {
           <Application userId={currentlySignedInUser} />
         </div>
       )}
+      </Router>
     </div>
   );
 }

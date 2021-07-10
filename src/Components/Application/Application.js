@@ -24,6 +24,7 @@ import Fade from "@material-ui/core/Fade";
 import CloseIcon from "@material-ui/icons/Close";
 import { SnackbarContent } from "@material-ui/core";
 import EditProfileDialog from "../EditProfileDialog/EditProfileDialog";
+import Hangout from "../Hangouts/Hangout";
 
 const drawerWidth = 240;
 
@@ -133,6 +134,11 @@ const useStyles = makeStyles((theme) => ({
     color: "#dcddde",
     overflowX: "hidden",
   },
+
+  large: {
+    width: theme.spacing(8),
+    height: theme.spacing(8),
+  },
 }));
 
 function Application({ userId }) {
@@ -202,7 +208,11 @@ function Application({ userId }) {
             }}
             variant="dot"
           >
-            <Avatar alt={userDetails.name} src={userDetails.photoUrl} />
+            <Avatar
+              alt={userDetails.name}
+              src={userDetails.photoUrl}
+              className={classes.large}
+            />
           </StyledBadge>
           <Typography variant="h6" className={classes.avatarDisplayName}>
             {userDetails.displayName}
@@ -217,6 +227,8 @@ function Application({ userId }) {
           </Typography>
         </div>
       </Grid>
+      <Divider />
+      <Hangout />
       <Divider />
     </div>
   );
