@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CreateHangoutDialog({ createAHangout, showDialog }) {
+function CreateHangoutDialog({ CreateAHangout, showDialog }) {
   const [hangoutName, setHangoutName] = useState("");
   const [hangoutPictureFile, setHangoutPictureFile] = useState(null);
   const classes = useStyles();
@@ -47,8 +47,8 @@ function CreateHangoutDialog({ createAHangout, showDialog }) {
 
   function handleCreateHangout(event) {
     event.preventDefault();
-    if (hangoutName) {
-      createAHangout(hangoutName);
+    if (hangoutName && hangoutPictureFile) {
+      CreateAHangout(hangoutName, hangoutPictureFile);
       showDialog();
     }
   }

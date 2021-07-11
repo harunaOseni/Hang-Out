@@ -27,7 +27,8 @@ function Hangout() {
   const [hangouts, setHangouts] = useState([]);
   const [showCreateHangoutDialog, setCreateHangoutDialogue] = useState(false);
   const [showSnackbar, setSnackbar] = useState(false);
-  const [hangoutProfilePictureUrl, setHangoutProfilePictureUrl] = useState("");
+  const [hangoutProfilePictureUrl, setHangoutProfilePictureUrl] =
+    useState(null);
 
   //A Bunch of functions to handle the various states of the component
 
@@ -47,7 +48,11 @@ function Hangout() {
   });
 
   function addNewHangout(hangoutName, hangoutPicture) {
-    if (hangoutName && hangoutPicture !== null) {
+    const uploadTask = storage
+      .ref(`HangoutProfilePicture/${hangoutPicture.name}`)
+      .put(hangoutPicture);
+
+    if (hangoutName || hangoutPicture) {
       hangoutName = hangoutName.charAt(0).toUpperCase() + hangoutName.slice(1);
       for (let i = 0; i < hangouts.length; i++) {
         if (hangouts[i].hangoutName === hangoutName) {
@@ -55,30 +60,31 @@ function Hangout() {
           return;
         }
       }
-
-      const uploadTask = storage
-        .ref(`HangoutProfilePicture/${hangoutPicture.name}`)
-        .put(hangoutPicture);
-
-      uploadTask.on((error) => {
-        if (error) {
-          console.log(error);
+      uploadTask.on(
+        (error) => {
+          if (error) {
+            console.log(error);
+          }
+        },
+        () => {
+          storage
+            .ref("HangoutProfilePicture")
+            .child(hangoutPicture.name)
+            .getDownloadURL()
+            .then((url) => {
+              database
+                .collection("hangouts")
+                .add({
+                  hangoutName:
+                    hangoutName.charAt(0).toUpperCase() + hangoutName.slice(1),
+                  hangoutPicture: url,
+                })
+                .catch((error) => {
+                  console.log(`Here's what went wrong, ${error}`);
+                });
+            });
         }
-      }, setHangoutProfilePictureUrl(storage.ref("HangoutProfilePicture").child(hangoutPicture.name).getDownloadURL()));
-
-      database
-        .collection("hangouts")
-        .add({
-          hangoutName:
-            hangoutName.charAt(0).toUpperCase() + hangoutName.slice(1),
-          hangoutPicture: hangoutProfilePictureUrl,
-        })
-        .then((result) => {
-          console.log("A New Hangout Has Been Added");
-        })
-        .catch((error) => {
-          console.log(`Here's what went wrong, ${error}`);
-        });
+      );
     }
   }
 
