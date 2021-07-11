@@ -20,15 +20,23 @@ import Fade from "@material-ui/core/Fade";
 import Snackbar from "@material-ui/core/Snackbar";
 import CloseIcon from "@material-ui/icons/Close";
 
+const useStyles = makeStyles((theme) => ({
+  forumIcon: {
+    color: "white",
+  },
+  hangoutList: {
+    boxShadow:
+      "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05)",
+  },
+}));
+
 function Hangout() {
-  //   const classes = useStyles();
+  const classes = useStyles();
   const history = useHistory();
   const [open, setOpen] = useState(true);
   const [hangouts, setHangouts] = useState([]);
   const [showCreateHangoutDialog, setCreateHangoutDialogue] = useState(false);
   const [showSnackbar, setSnackbar] = useState(false);
-  const [hangoutProfilePictureUrl, setHangoutProfilePictureUrl] =
-    useState(null);
 
   //A Bunch of functions to handle the various states of the component
 
@@ -137,13 +145,41 @@ function Hangout() {
         style={{
           paddingTop: "0px",
           paddingBottom: "0px",
+          boxShadow:
+            "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05)",
         }}
       >
         <ListItemText primary="Create New Hangout" />
-        <IconButton onClick={handleShowCreateHangoutDialog}>
+        <IconButton
+          onClick={handleShowCreateHangoutDialog}
+          className={classes.forumIcon}
+        >
           <AddIcon />
         </IconButton>
       </ListItem>
+
+      <List className={classes.hangoutList}>
+        <ListItem button onClick={handleHangoutCollapseAndExpand}>
+          <ListItemIcon className={classes.forumIcon}>
+            <IoMdChatboxes />
+          </ListItemIcon>
+          <ListItemText primary="HANGOUTS" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+
+        <Collapse in={open}>
+          <List>
+            {hangouts.map((hangout) => (
+              <ListItem
+                button
+                onClick={() => handleHangoutRoute(hangout.id)}
+                key={hangout.id}
+                className={classes.hangoutNestedList}
+              >{hangout.hangoutName}</ListItem>
+            ))}
+          </List>
+        </Collapse>
+      </List>
     </div>
   );
 }
