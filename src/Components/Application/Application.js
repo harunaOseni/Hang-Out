@@ -275,9 +275,9 @@ function Application({ userId }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            <h3 to="/" style={{ textDecoration: "none", color: "#dcddde" }}>
-              Home
-            </h3>
+            <Link to="/" style={{ textDecoration: "none", color: "#dcddde" }}>
+              <h3>Home</h3>
+            </Link>
           </Typography>
 
           <div>

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { LoginPage } from "./Components";
-import { Application } from "./Components";
+import { LoginPage, Application, Home } from "./Components";
 import { auth, database } from "./Firebase/firebase";
 import { makeStyles } from "@material-ui/core/styles";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,7 +12,6 @@ const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
   content: {
     flex: "1",
-    backgroundColor: "rgba(43, 72, 158, 0.946)",
     height: "100vh",
   },
 }));
@@ -60,13 +58,19 @@ function App() {
   return (
     <div className="app">
       <Router>
-      {!currentlySignedInUser ? (
-        <LoginPage />
-      ) : (
-        <div className={classes.root}>
-          <Application userId={currentlySignedInUser} />
-        </div>
-      )}
+        {!currentlySignedInUser ? (
+          <LoginPage />
+        ) : (
+          <div className={classes.root}>
+            <Application userId={currentlySignedInUser} />
+            <main className={classes.content}>
+              <div className={classes.toolbar} style={{}} />
+              <Switch>
+                <Route exact path="/" component={Home} />
+              </Switch>
+            </main>
+          </div>
+        )}
       </Router>
     </div>
   );

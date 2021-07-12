@@ -14,7 +14,7 @@ import { database, storage } from "../../Firebase/firebase";
 import { SnackbarContent } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { IoMdChatboxes } from "react-icons/io";
-import { BiHash } from "react-icons/io";
+import { IoIosPeople } from "react-icons/io";
 import CreateHangoutDialog from "../CreateHangoutDialog/CreateHangoutDialog";
 import Fade from "@material-ui/core/Fade";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -27,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
   hangoutList: {
     boxShadow:
       "0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05)",
+  },
+
+  iconStyling: {
+    color: "white",
   },
 }));
 
@@ -60,7 +64,7 @@ function Hangout() {
       .ref(`HangoutProfilePicture/${hangoutPicture.name}`)
       .put(hangoutPicture);
 
-    if (hangoutName || hangoutPicture) {
+    if (hangoutName && hangoutPicture) {
       hangoutName = hangoutName.charAt(0).toUpperCase() + hangoutName.slice(1);
       for (let i = 0; i < hangouts.length; i++) {
         if (hangouts[i].hangoutName === hangoutName) {
@@ -161,21 +165,31 @@ function Hangout() {
       <List className={classes.hangoutList}>
         <ListItem button onClick={handleHangoutCollapseAndExpand}>
           <ListItemIcon className={classes.forumIcon}>
-            <IoMdChatboxes />
+            <IoMdChatboxes size={25}/>
           </ListItemIcon>
-          <ListItemText primary="HANGOUTS" />
+          <ListItemText
+            primary="HANGOUTS"
+            style={{
+              color: "darkgrey",
+            }}
+          />
           {open ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
 
-        <Collapse in={open}>
-          <List>
+        <Collapse in={open} timeout="auto">
+          <List disablePadding>
             {hangouts.map((hangout) => (
               <ListItem
                 button
                 onClick={() => handleHangoutRoute(hangout.id)}
                 key={hangout.id}
                 className={classes.hangoutNestedList}
-              >{hangout.hangoutName}</ListItem>
+              >
+                <ListItemIcon className={classes.iconStyling}>
+                  <IoIosPeople size={25}/>
+                </ListItemIcon>
+                <ListItemText primary={hangout.hangoutName} />
+              </ListItem>
             ))}
           </List>
         </Collapse>
