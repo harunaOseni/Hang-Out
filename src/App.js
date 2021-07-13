@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { LoginPage, Application, Home } from "./Components";
+import { LoginPage, Application, Home, HangoutLiveChat } from "./Components";
 import { auth, database } from "./Firebase/firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -67,6 +67,7 @@ function App() {
               <div className={classes.toolbar} style={{}} />
               <Switch>
                 <Route exact path="/" component={Home} />
+                <Route path="/hangout/:id" component={HangoutLiveChat} />
               </Switch>
             </main>
           </div>

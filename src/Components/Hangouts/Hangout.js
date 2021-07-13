@@ -57,7 +57,7 @@ function Hangout() {
           }))
         );
       });
-  });
+  }, []);
 
   function addNewHangout(hangoutName, hangoutPicture) {
     const uploadTask = storage
@@ -67,7 +67,7 @@ function Hangout() {
     if (hangoutName && hangoutPicture) {
       hangoutName = hangoutName.charAt(0).toUpperCase() + hangoutName.slice(1);
       for (let i = 0; i < hangouts.length; i++) {
-        if (hangouts[i].hangoutName === hangoutName) {
+        if (hangoutName === hangouts[i].hangoutName) {
           handleHangoutSnackBar();
           return;
         }
@@ -177,7 +177,7 @@ function Hangout() {
         </ListItem>
 
         <Collapse in={open} timeout="auto">
-          <List disablePadding>
+          <List disablePadding className={classes.hangout__childList}>
             {hangouts.map((hangout) => (
               <ListItem
                 button
