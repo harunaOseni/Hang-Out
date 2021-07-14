@@ -32,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
   iconStyling: {
     color: "white",
   },
+
+  hangout__childList: {
+    height: "calc(41vh)",
+    overflowY: "scroll",
+  },
 }));
 
 function Hangout() {
@@ -165,7 +170,7 @@ function Hangout() {
       <List className={classes.hangoutList}>
         <ListItem button onClick={handleHangoutCollapseAndExpand}>
           <ListItemIcon className={classes.forumIcon}>
-            <IoMdChatboxes size={25}/>
+            <IoMdChatboxes size={25} />
           </ListItemIcon>
           <ListItemText
             primary="HANGOUTS"
@@ -186,7 +191,7 @@ function Hangout() {
                 className={classes.hangoutNestedList}
               >
                 <ListItemIcon className={classes.iconStyling}>
-                  <IoIosPeople size={25}/>
+                  <IoIosPeople size={25} />
                 </ListItemIcon>
                 <ListItemText primary={hangout.hangoutName} />
               </ListItem>
