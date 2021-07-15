@@ -67,10 +67,9 @@ function CreateHangoutDialog({ CreateAHangout, showDialog }) {
       >
         <DialogTitle>Create a Hangout</DialogTitle>
         <DialogContent>
-          <form onSubmit={handleCreateHangout} className={classes.root}>
+          <form onSubmit={handleCreateHangout} className={classes.root} autoComplete = "off" >
             <label
               htmlFor="hangoutGroupPicture"
-              className={"a class goes in here"}
             >
               <TextField
                 name="Hangout Group Photo Upload"

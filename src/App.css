@@ -19,3 +19,7 @@ body {
     height: 2px;
 }
 
+.MuiOutlinedInput-notchedOutline {
+    border: 0 !important;
+  }
+
