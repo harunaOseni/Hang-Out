@@ -16,6 +16,7 @@ import { FcAddImage } from "react-icons/fc";
 import { Picker } from "emoji-mart";
 import { MdKeyboardVoice } from "react-icons/md";
 import "emoji-mart/css/emoji-mart.css";
+import userEvent from "@testing-library/user-event";
 //import file upload dialogue here
 
 const useStyles = makeStyles((theme) => ({
@@ -44,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   textActionContent: {
+    position: "relative",
     display: "flex",
     alignItems: "center",
     borderRadius: "5px",
@@ -71,7 +73,7 @@ function HangoutLiveChat(props) {
   const [hangoutName, setHangoutName] = useState("");
   const parameter = useParams();
   const [mediaFile, setMediaFile] = useState(null);
-  const [userMessages, setUserMessages] = useState(null);
+  const [userMessages, setUserMessages] = useState("");
   const [emojiState, setEmojiState] = useState(false);
 
   useEffect(() => {
@@ -90,6 +92,10 @@ function HangoutLiveChat(props) {
     if (event.target.files[0]) {
       setMediaFile(event.target.files[0]);
     }
+  }
+
+  function handleAddEmojiToMsg(event) {
+    setUserMessages(userMessages + event.native);
   }
 
   function handleUserMessage(event) {
@@ -131,9 +137,13 @@ function HangoutLiveChat(props) {
           <IconButton component="label" htmlFor="file__input">
             <FcAddImage />
           </IconButton>
-          
+
           {emojiState ? (
-            <Picker onSelect={"a add emoji function goes here"} theme="light" />
+            <Picker
+              onSelect={handleAddEmojiToMsg}
+              style={{ position: "absolute", bottom: "60px" }}
+              theme="light"
+            />
           ) : null}
 
           <IconButton component="button" onClick={handleEmojiState}>
@@ -143,17 +153,19 @@ function HangoutLiveChat(props) {
           <form autoComplete="off" className={classes.form__input}>
             <TextField
               id="outline-basic"
-              label="Enter Message"
               variant="outlined"
-              required
               multiline
               fullWidth
               rows={1}
               rowsMax={3}
-              //value goes in here
+              value={userMessages}
               onChange={handleUserMessage}
               className={classes.form__inputTextField}
             />
+
+            {/* A Controlled Component is one that takes its current value 
+            through props and notifies changes through callbacks like onChange. */}
+          
             <IconButton>
               <MdKeyboardVoice />
             </IconButton>

@@ -1,25 +1,28 @@
 body {
-    background-color: rgba(43, 72, 158, 0.946) !important;
-    height: 100vh;
-    overflow: hidden;
+  background-color: rgba(43, 72, 158, 0.946) !important;
+  height: 100vh;
+  overflow: hidden;
 }
 
 ::-webkit-scrollbar {
-    width: 5px;
-  }
-
-::-webkit-scrollbar-track {
-    background: rgba(43, 72, 158, 0.99);
-    border-radius: 4px;
+  width: 5px;
 }
 
-::-webkit-scrollbar-thumb { 
-    background: rgba(211, 211, 211, 0.515); 
-    border-radius: 4px;
-    height: 2px;
+::-webkit-scrollbar-track {
+  background: rgba(43, 72, 158, 0.99);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(211, 211, 211, 0.515);
+  border-radius: 4px;
+  height: 2px;
 }
 
 .MuiOutlinedInput-notchedOutline {
-    border: 0 !important;
-  }
+  border: 0 !important;
+}
 
+.emoji-mart-preview {
+  display: none;
+}
