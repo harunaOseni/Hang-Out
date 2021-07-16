@@ -3,7 +3,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-//import Text component goes in here
+import { Message } from "../../Components";
 import IconButton from "@material-ui/core/IconButton";
 import { useParams } from "react-router-dom";
 import { database } from "../../Firebase/firebase";
@@ -66,6 +66,15 @@ const useStyles = makeStyles((theme) => ({
   form__inputTextField: {
     width: "100%",
   },
+
+  message__feed: {
+    position: "relative",
+    height: "calc(100vh - 200px)",
+    paddingLeft: "10px",
+    paddingBottom: "5px",
+    paddingTop: "5px",
+    paddingRight: "10px",
+  },
 }));
 
 function HangoutLiveChat(props) {
@@ -117,11 +126,11 @@ function HangoutLiveChat(props) {
           {hangoutName} Hangout
         </Typography>
       </Grid>
-      <div
-        style={{
-          height: "calc(100vh - 200px)",
-        }}
-      />
+      <div className={classes.message__feed}>
+        <ScrollableFeed>
+          <Message/>
+        </ScrollableFeed>
+      </div>
       <div className={classes.textActionField}>
         <Grid item xs={12} className={classes.textActionContent}>
           <input
@@ -165,11 +174,14 @@ function HangoutLiveChat(props) {
 
             {/* A Controlled Component is one that takes its current value 
             through props and notifies changes through callbacks like onChange. */}
-          
-            <IconButton>
+
+            <IconButton component="button">
               <MdKeyboardVoice />
             </IconButton>
-            <IconButton>
+            <IconButton
+              type="submit"
+              onClick="a post message function goes in here"
+            >
               <IoMdSend />
             </IconButton>
           </form>
