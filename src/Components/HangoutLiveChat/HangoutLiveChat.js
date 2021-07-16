@@ -17,6 +17,7 @@ import { Picker } from "emoji-mart";
 import { MdKeyboardVoice } from "react-icons/md";
 import "emoji-mart/css/emoji-mart.css";
 import userEvent from "@testing-library/user-event";
+import { FaStamp } from "react-icons/fa";
 //import file upload dialogue here
 
 const useStyles = makeStyles((theme) => ({
@@ -85,6 +86,7 @@ function HangoutLiveChat(props) {
   const [userMessage, setUserMessage] = useState("");
   const [emojiState, setEmojiState] = useState(false);
   const [hangoutMessages, setToHangoutMessages] = useState([]);
+  const [fileUploadModalState, setFileUploadModalState] = useState(false);
 
   useEffect(() => {
     if (parameter.id) {
@@ -109,13 +111,23 @@ function HangoutLiveChat(props) {
           );
         });
     }
+
+    setUserMessage("");
+    setEmojiState(false);
   }, [parameter]);
+
+  function handleFileUploadModal() {
+    setFileUploadModalState(!fileUploadModalState);
+  }
 
   function handleMediaFile(event) {
     event.preventDefault();
     if (event.target.files[0]) {
       setMediaFile(event.target.files[0]);
+      handleFileUploadModal();
     }
+
+    setMediaFile(null);
   }
 
   function handleAddEmojiToMsg(event) {
@@ -126,6 +138,55 @@ function HangoutLiveChat(props) {
     event.preventDefault();
     const message = event.target.value;
     setUserMessage(message);
+    setEmojiState(false);
+  }
+
+  function handleSendUserMessage(event) {
+    event.preventDefault();
+    if (userMessage && parameter.id) {
+      const userDetails = JSON.parse(localStorage.getItem("userDetails"));
+      if (userDetails) {
+        const displayName = userDetails.displayName;
+        const profilePicture = userDetails.photoUrl;
+        const userId = userDetails.uid;
+        const likeCount = 0;
+        const likes = {};
+        const fireCount = 0;
+        const fire = {};
+        const heartCount = 0;
+        const heart = {};
+        const messageMedia = null;
+        const messageInfo = {
+          text: userMessage,
+          timestamp: firebase.firestore.Timestamp.now(),
+          userAvatar: profilePicture,
+          userId: userId,
+          username: displayName,
+          likeCount: likeCount,
+          likes: likes,
+          fireCount: fireCount,
+          fire: fire,
+          heartCount: heartCount,
+          heart: heart,
+          messageMedia: messageMedia,
+        };
+
+        database
+          .collection("hangouts")
+          .doc(parameter.id)
+          .collection("messages")
+          .add(messageInfo)
+          .then((result) => {
+            console.log("Message has been sent succesfully.");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
+      setUserMessage("");
+      setEmojiState(false);
+    }
   }
 
   function handleEmojiState(event) {
@@ -193,10 +254,7 @@ function HangoutLiveChat(props) {
             <IconButton component="button">
               <MdKeyboardVoice />
             </IconButton>
-            <IconButton
-              type="submit"
-              onClick="a post message function goes in here"
-            >
+            <IconButton type="submit" onClick={handleSendUserMessage}>
               <IoMdSend />
             </IconButton>
           </form>
