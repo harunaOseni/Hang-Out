@@ -82,8 +82,9 @@ function HangoutLiveChat(props) {
   const [hangoutName, setHangoutName] = useState("");
   const parameter = useParams();
   const [mediaFile, setMediaFile] = useState(null);
-  const [userMessages, setUserMessages] = useState("");
+  const [userMessage, setUserMessage] = useState("");
   const [emojiState, setEmojiState] = useState(false);
+  const [hangoutMessages, setToHangoutMessages] = useState([]);
 
   useEffect(() => {
     if (parameter.id) {
@@ -92,6 +93,20 @@ function HangoutLiveChat(props) {
         .doc(parameter.id)
         .onSnapshot((snapshot) => {
           setHangoutName(snapshot.data().hangoutName);
+        });
+
+      database
+        .collection("hangouts")
+        .doc(parameter.id)
+        .collection("messages")
+        .orderBy("timestamp", "asc")
+        .onSnapshot((snapshot) => {
+          setToHangoutMessages(
+            snapshot.docs.map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          );
         });
     }
   }, [parameter]);
@@ -104,13 +119,13 @@ function HangoutLiveChat(props) {
   }
 
   function handleAddEmojiToMsg(event) {
-    setUserMessages(userMessages + event.native);
+    setUserMessage(userMessage + event.native);
   }
 
   function handleUserMessage(event) {
     event.preventDefault();
     const message = event.target.value;
-    setUserMessages(message);
+    setUserMessage(message);
   }
 
   function handleEmojiState(event) {
@@ -128,7 +143,7 @@ function HangoutLiveChat(props) {
       </Grid>
       <div className={classes.message__feed}>
         <ScrollableFeed>
-          <Message/>
+          <Message />
         </ScrollableFeed>
       </div>
       <div className={classes.textActionField}>
@@ -167,7 +182,7 @@ function HangoutLiveChat(props) {
               fullWidth
               rows={1}
               rowsMax={3}
-              value={userMessages}
+              value={userMessage}
               onChange={handleUserMessage}
               className={classes.form__inputTextField}
             />

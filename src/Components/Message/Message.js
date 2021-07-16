@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#fff4",
     },
-    paddingBottom: "20px",
   },
 
   user__avatar: {
@@ -67,12 +66,42 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1rem",
     color: "rgb(255 195 54)",
   },
+
+  emoji__countButtonContainer: {
+    display: "flex",
+  },
+
+  emoji__countButtondiv: {
+    backgroundColor: "rgba(35,40,158,0.99)",
+    marginRight: "5px",
+    borderRadius: "5px",
+    alignItems: "center",
+  },
+
+  emoji__count: {
+    fontWeight: "bold",
+    paddingLeft: "5px",
+  },
 }));
 
 function Message() {
   const classes = useStyles();
+  const [style, setStyle] = useState({ display: "none" });
+
+  function handleMouseEnter() {
+    setStyle({ display: "block" });
+  }
+
+  function handleMouseLeave() {
+    setStyle({ display: "none" });
+  }
   return (
-    <div className={classes.root}>
+    <div
+      className={classes.root}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      
       <div className={classes.message__content}>
         <Avatar
           src="https://firebasestorage.googleapis.com/v0/b/hangout-application.appspot.com/o/profilePictures%2F38b2c1b8b4703be9005df0dd694b2ae9.jpg?alt=media&token=b9b9b93f-0f00-41e9-a3b2-beb443c0b8e8"
@@ -109,10 +138,46 @@ function Message() {
               className={classes.message__image}
             />
           </div>
+
+          <div className={classes.emoji__countButtonContainer}>
+            <div className={classes.emoji__countButtondiv}>
+              <IconButton style={{ color: "green" }}>
+                <AiFillLike />
+                <Typography
+                  variant="subtitle2"
+                  className={classes.emoji__count}
+                >
+                  1
+                </Typography>
+              </IconButton>
+            </div>
+            <div className={classes.emoji__countButtondiv}>
+              <IconButton style={{color: "red"}}>
+                <AiFillHeart className={classes.emoji__countButton} />
+                <Typography
+                  variant="subtitle2"
+                  className={classes.emoji__count}
+                >
+                  1
+                </Typography>
+              </IconButton>
+            </div>
+            <div className={classes.emoji__countButtondiv}>
+              <IconButton style={{ color: "orange" }}>
+                <AiFillFire className={classes.emoji__countButton} />
+                <Typography
+                  variant="subtitle2"
+                  className={classes.emoji__count}
+                >
+                  1
+                </Typography>
+              </IconButton>
+            </div>
+          </div>
         </div>
 
-        <div className={classes.message__emojiBtnContainer}>
-          <IconButton>
+        <div className={classes.message__emojiBtnContainer} style={style}>
+          <IconButton >
             <AiFillLike className={classes.emoji__button} />
           </IconButton>
           <IconButton>
@@ -122,7 +187,10 @@ function Message() {
             <AiFillHeart className={classes.emoji__button} />
           </IconButton>
           <IconButton>
-            <AiFillDelete className={classes.emoji__button} style={{color: "red"}} />
+            <AiFillDelete
+              className={classes.emoji__button}
+              style={{ color: "red" }}
+            />
           </IconButton>
         </div>
       </div>
