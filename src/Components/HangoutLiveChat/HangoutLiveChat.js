@@ -18,7 +18,7 @@ import { MdKeyboardVoice } from "react-icons/md";
 import "emoji-mart/css/emoji-mart.css";
 import userEvent from "@testing-library/user-event";
 import { FaStamp } from "react-icons/fa";
-//import file upload dialogue here
+import FileUploadModal from "../FileUploadModal/FileUploadModal";
 
 const useStyles = makeStyles((theme) => ({
   hangout__liveChat: {
@@ -126,8 +126,6 @@ function HangoutLiveChat(props) {
       setMediaFile(event.target.files[0]);
       handleFileUploadModal();
     }
-
-    setMediaFile(null);
   }
 
   function handleAddEmojiToMsg(event) {
@@ -196,6 +194,12 @@ function HangoutLiveChat(props) {
 
   return (
     <div className={classes.hangout__liveChat}>
+      {fileUploadModalState ? (
+        <FileUploadModal
+          handleFileUploadModal={handleFileUploadModal}
+          mediaFile={mediaFile}
+        />
+      ) : null}
       <Grid item xs={12} className={classes.hangout__nameContainer}>
         <IoIosPeople className={classes.iconStyling} size={25} />
         <Typography variant="h3" className={classes.hangout__nameText}>
@@ -204,6 +208,13 @@ function HangoutLiveChat(props) {
       </Grid>
       <div className={classes.message__feed}>
         <ScrollableFeed>
+          {hangoutMessages.map((hangoutMessage) => (
+            <Message
+              key={hangoutMessage.id}
+              hangoutMessageId={hangoutMessage.id}
+              messageData={hangoutMessage.data}
+            />
+          ))}
           <Message />
         </ScrollableFeed>
       </div>

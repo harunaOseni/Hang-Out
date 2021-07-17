@@ -19,6 +19,10 @@ body {
   height: 2px;
 }
 
+.MuiCircularProgress-colorPrimary {
+    color: white !important;
+}
+
 .MuiOutlinedInput-notchedOutline {
   border: 0 !important;
 }
