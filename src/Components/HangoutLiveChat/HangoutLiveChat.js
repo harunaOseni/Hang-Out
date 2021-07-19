@@ -19,6 +19,9 @@ import "emoji-mart/css/emoji-mart.css";
 import userEvent from "@testing-library/user-event";
 import { FaStamp } from "react-icons/fa";
 import FileUploadModal from "../FileUploadModal/FileUploadModal";
+import MicRecorder from "mic-recorder-to-mp3";
+import { FaRegStopCircle } from "react-icons/fa";
+import { useStopwatch } from "react-timer-hook";
 
 const useStyles = makeStyles((theme) => ({
   hangout__liveChat: {
@@ -80,6 +83,14 @@ const useStyles = makeStyles((theme) => ({
 
 function HangoutLiveChat(props) {
   const classes = useStyles();
+  const Mp3Recorder = new MicRecorder({
+    bitRate: 128,
+  });
+
+  const { seconds, minutes, start, reset, pause } = useStopwatch({
+    autoStart: false,
+  });
+
   const [hangoutName, setHangoutName] = useState("");
   const parameter = useParams();
   const [mediaFile, setMediaFile] = useState(null);
@@ -88,6 +99,49 @@ function HangoutLiveChat(props) {
   const [hangoutMessages, setToHangoutMessages] = useState([]);
   const [fileUploadModalState, setFileUploadModalState] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [blobURL, setBlobURL] = useState("");
+  const [permissionBlocked, setPermissionBlocked] = useState(false);
+
+  function handleStartRecording() {
+    if (permissionBlocked) {
+      console.log("Permission Blocked");
+    } else {
+      Mp3Recorder.start()
+        .then(() => {
+          setRecording(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }
+
+  function handleStopRecording() {
+    Mp3Recorder.stop()
+      .getMp3()
+      .then(([buffer, blob]) => {
+        const blobURL = URL.createObjectURL(blob);
+        setRecording(false);
+        setBlobURL(blobURL);
+        console.log(blobURL);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  useEffect(() => {
+    navigator.getUserMedia(
+      { audio: true },
+      () => {
+        setPermissionBlocked(false);
+      },
+      () => {
+        setPermissionBlocked(true);
+      }
+    );
+  }, []);
+
   useEffect(() => {
     if (parameter.id) {
       database
@@ -213,6 +267,7 @@ function HangoutLiveChat(props) {
               key={hangoutMessage.id}
               hangoutMessageId={hangoutMessage.id}
               messageData={hangoutMessage.data}
+              url={blobURL}
             />
           ))}
           <Message />
@@ -230,9 +285,11 @@ function HangoutLiveChat(props) {
             id="file__input"
           />
 
-          <IconButton component="label" htmlFor="file__input">
-            <FcAddImage />
-          </IconButton>
+          {recording === false ? (
+            <IconButton component="label" htmlFor="file__input">
+              <FcAddImage />
+            </IconButton>
+          ) : null}
 
           {emojiState ? (
             <Picker
@@ -242,9 +299,18 @@ function HangoutLiveChat(props) {
             />
           ) : null}
 
-          <IconButton component="button" onClick={handleEmojiState}>
-            <GrEmoji className={classes.iconStyling} size={25} />
-          </IconButton>
+          {recording === false ? (
+            <IconButton component="button" onClick={handleEmojiState}>
+              <GrEmoji className={classes.iconStyling} size={25} />
+            </IconButton>
+          ) : (
+            <Typography
+              variant="subtitle1"
+              style={{ fontWeight: "bold", paddingLeft: "10px", color: "red" }}
+            >
+              {`${minutes}:${seconds}`}
+            </Typography>
+          )}
 
           <form autoComplete="off" className={classes.form__input}>
             <TextField
@@ -262,12 +328,35 @@ function HangoutLiveChat(props) {
             {/* A Controlled Component is one that takes its current value 
             through props and notifies changes through callbacks like onChange. */}
 
-            <IconButton component="button">
-              <MdKeyboardVoice />
-            </IconButton>
-            <IconButton type="submit" onClick={handleSendUserMessage}>
-              <IoMdSend />
-            </IconButton>
+            {recording === false ? (
+              <IconButton
+                component="button"
+                onClick={() => {
+                  handleStartRecording();
+                  setRecording(true);
+                  start();
+                }}
+              >
+                <MdKeyboardVoice />
+              </IconButton>
+            ) : (
+              <IconButton
+                component="button"
+                style={{ color: "red" }}
+                onClick={() => {
+                  setRecording(false);
+                  handleStopRecording();
+                }}
+              >
+                <MdKeyboardVoice />
+              </IconButton>
+            )}
+
+            {recording === false ? (
+              <IconButton type="submit" onClick={handleSendUserMessage}>
+                <IoMdSend />
+              </IconButton>
+            ) : null}
           </form>
         </Grid>
       </div>

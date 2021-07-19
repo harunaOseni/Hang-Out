@@ -19,6 +19,7 @@ import CreateHangoutDialog from "../CreateHangoutDialog/CreateHangoutDialog";
 import Fade from "@material-ui/core/Fade";
 import Snackbar from "@material-ui/core/Snackbar";
 import CloseIcon from "@material-ui/icons/Close";
+import firebase from "firebase";
 
 const useStyles = makeStyles((theme) => ({
   forumIcon: {
@@ -46,6 +47,8 @@ function Hangout() {
   const [hangouts, setHangouts] = useState([]);
   const [showCreateHangoutDialog, setCreateHangoutDialogue] = useState(false);
   const [showSnackbar, setSnackbar] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressBar, setProgressBar] = useState({ display: "none" });
 
   //A Bunch of functions to handle the various states of the component
 
@@ -65,6 +68,7 @@ function Hangout() {
   }, []);
 
   function addNewHangout(hangoutName, hangoutPicture) {
+    setProgressBar({ display: "block" });
     const uploadTask = storage
       .ref(`HangoutProfilePicture/${hangoutPicture.name}`)
       .put(hangoutPicture);
@@ -74,10 +78,16 @@ function Hangout() {
       for (let i = 0; i < hangouts.length; i++) {
         if (hangoutName === hangouts[i].hangoutName) {
           handleHangoutSnackBar();
-          return;
         }
       }
       uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgress(progress);
+        },
         (error) => {
           if (error) {
             console.log(error);
@@ -95,6 +105,7 @@ function Hangout() {
                   hangoutName:
                     hangoutName.charAt(0).toUpperCase() + hangoutName.slice(1),
                   hangoutPicture: url,
+                  timestamp: firebase.database.ServerValue.TIMESTAMP,
                 })
                 .catch((error) => {
                   console.log(`Here's what went wrong, ${error}`);
@@ -147,6 +158,8 @@ function Hangout() {
         <CreateHangoutDialog
           CreateAHangout={addNewHangout}
           showDialog={handleShowCreateHangoutDialog}
+          progress={progress}
+          progressBar={progressBar}
         />
       ) : null}
 

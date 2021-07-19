@@ -147,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Message() {
+function Message({ url }) {
   const classes = useStyles();
   const [style, setStyle] = useState({ display: "none" });
 
@@ -224,9 +224,7 @@ function Message() {
                 spacing={2}
                 order="standart"
                 preload="auto"
-                src={
-                  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-                }
+                src={url}
                 useStyles={audioPlayerStyle}
               />
             </div>

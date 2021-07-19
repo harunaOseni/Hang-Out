@@ -47,9 +47,9 @@ const useStyles = makeStyles((theme) => ({
   hangout__name: {
     fontWeight: "700",
     [theme.breakpoints.down("sm")]: {
-        textAlign: "left",
-    }
-  }, 
+      textAlign: "left",
+    },
+  },
 }));
 
 function Home() {
@@ -58,15 +58,18 @@ function Home() {
   const history = useHistory();
 
   useEffect(() => {
-    database.collection("hangouts").onSnapshot((snapshot) => {
-      setHangouts(
-        snapshot.docs.map((hangout) => ({
-          hangoutName: hangout.data().hangoutName,
-          id: hangout.id,
-          hangoutPicture: hangout.data().hangoutPicture,
-        }))
-      );
-    });
+    database
+      .collection("hangouts")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setHangouts(
+          snapshot.docs.map((hangout) => ({
+            hangoutName: hangout.data().hangoutName,
+            id: hangout.id,
+            hangoutPicture: hangout.data().hangoutPicture,
+          }))
+        );
+      });
   }, []);
 
   function handleHangoutRoute(id) {

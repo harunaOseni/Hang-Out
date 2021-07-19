@@ -9,6 +9,9 @@ import TextField from "@material-ui/core/TextField";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
 import DoneAllIcon from "@material-ui/icons/DoneAll";
+import { CircularProgress } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => ({
   confirmText: {
@@ -32,8 +35,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CreateHangoutDialog({ CreateAHangout, showDialog }) {
-  const [hangoutName, setHangoutName] = useState("");
+function CreateHangoutDialog({
+  CreateAHangout,
+  showDialog,
+  progress,
+  progressBar,
+}) {
+  const [hangoutName, setHangoutName] = useState(null);
   const [hangoutPictureFile, setHangoutPictureFile] = useState(null);
   const classes = useStyles();
 
@@ -67,10 +75,12 @@ function CreateHangoutDialog({ CreateAHangout, showDialog }) {
       >
         <DialogTitle>Create a Hangout</DialogTitle>
         <DialogContent>
-          <form onSubmit={handleCreateHangout} className={classes.root} autoComplete = "off" >
-            <label
-              htmlFor="hangoutGroupPicture"
-            >
+          <form
+            onSubmit={handleCreateHangout}
+            className={classes.root}
+            autoComplete="off"
+          >
+            <label htmlFor="hangoutGroupPicture">
               <TextField
                 name="Hangout Group Photo Upload"
                 type="file"
@@ -108,7 +118,28 @@ function CreateHangoutDialog({ CreateAHangout, showDialog }) {
               className={classes.textField}
             />
           </form>
+
+          <div style={progressBar}>
+            <Box display="flex" justifyContent="center" position="relative">
+              <CircularProgress variant="determinate" value={progress} />
+              <Box
+                top={0}
+                left={0}
+                bottom={0}
+                right={0}
+                position="absolute"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Typography variant="caption" component="div" color="white">
+                  {progress}%
+                </Typography>
+              </Box>
+            </Box>
+          </div>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={showDialog} style={{ color: "white" }}>
             Cancel
