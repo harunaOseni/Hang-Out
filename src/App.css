@@ -13,6 +13,10 @@ body {
   border-radius: 4px;
 }
 
+.makeStyles-audio__container-45 {
+    width: 55vw !important;
+}
+
 ::-webkit-scrollbar-thumb {
   background: rgba(211, 211, 211, 0.515);
   border-radius: 4px;

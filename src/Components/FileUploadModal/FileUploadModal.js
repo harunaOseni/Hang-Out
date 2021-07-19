@@ -136,11 +136,20 @@ function FileUploadModal({ handleFileUploadModal, mediaFile }) {
         }}
       >
         <div className={classes.image__toBeUploadedContainer}>
-          <img
-            className={classes.image__toBeUploaded}
-            src={mediaFileUrlForDisplay}
-            alt="Image__toBeUploaded"
-          />
+          {mediaFile.type.match("image.*") ? (
+            <img
+              className={classes.image__toBeUploaded}
+              src={mediaFileUrlForDisplay}
+              alt="Image__toBeUploaded"
+            />
+          ) : (
+            <video
+              src={mediaFileUrlForDisplay}
+              controls
+              width="310"
+              height="240"
+            />
+          )}
         </div>
         <DialogContent>
           <form

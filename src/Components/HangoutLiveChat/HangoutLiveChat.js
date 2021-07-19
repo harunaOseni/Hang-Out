@@ -87,7 +87,7 @@ function HangoutLiveChat(props) {
   const [emojiState, setEmojiState] = useState(false);
   const [hangoutMessages, setToHangoutMessages] = useState([]);
   const [fileUploadModalState, setFileUploadModalState] = useState(false);
-
+  const [recording, setRecording] = useState(false);
   useEffect(() => {
     if (parameter.id) {
       database

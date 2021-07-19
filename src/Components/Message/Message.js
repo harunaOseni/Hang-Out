@@ -7,6 +7,51 @@ import { AiFillLike } from "react-icons/ai";
 import { AiFillFire } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
 import { AiFillDelete } from "react-icons/ai";
+import ReactPlayer from "react-player/lazy";
+import AudioPlayer from "material-ui-audio-player";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+
+const muiTheme = createMuiTheme({});
+
+const audioPlayerStyle = makeStyles((theme) => ({
+  root: {
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
+    width: "100%",
+  },
+
+  playIcon: {
+    color: "rgba(43, 72, 158, 0.99)",
+    "&:hover": {
+      color: "rgba(43, 72, 158, 0.92)",
+    },
+  },
+
+  pauseIcon: {
+    color: "rgba(43, 72, 158, 0.99)",
+    "&:hover": {
+      color: "rgba(43, 72, 158, 0.92)",
+    },
+  },
+
+  volumeIcon: {
+    color: "rgba(43, 72, 158, 0.99)",
+    "&:hover": {
+      color: "rgba(43, 72, 158, 0.92)",
+    },
+  },
+  volumeSlider: {
+    color: "rgba(43, 72, 158, 0.99)",
+  },
+
+  mainSlider: {
+    color: "#3f51b5",
+    "& .MuiSlider-rail": {
+      color: "#7986cb",
+    },
+  },
+}));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,18 +114,36 @@ const useStyles = makeStyles((theme) => ({
 
   emoji__countButtonContainer: {
     display: "flex",
+    marginTop: "5px",
   },
 
   emoji__countButtondiv: {
     backgroundColor: "rgba(35,40,158,0.99)",
+    position: "relative",
     marginRight: "5px",
     borderRadius: "5px",
     alignItems: "center",
+    fontSize: "3px",
   },
 
   emoji__count: {
     fontWeight: "bold",
     paddingLeft: "5px",
+  },
+
+  emoji__countButton: {
+    padding: 0,
+  },
+
+  video__container: {
+    paddingTop: "5px",
+  },
+
+  audio__container: {
+    paddingTop: "15px",
+    paddingBottom: "10px",
+    paddingLeft: "10px",
+    width: "100%",
   },
 }));
 
@@ -101,7 +164,6 @@ function Message() {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      
       <div className={classes.message__content}>
         <Avatar
           src="https://firebasestorage.googleapis.com/v0/b/hangout-application.appspot.com/o/profilePictures%2F38b2c1b8b4703be9005df0dd694b2ae9.jpg?alt=media&token=b9b9b93f-0f00-41e9-a3b2-beb443c0b8e8"
@@ -128,21 +190,52 @@ function Message() {
               30/5/2021 11:19
             </Typography>
           </div>
-          <div className={classes.bottom__messageContent}>
+          {/* <div className={classes.bottom__messageContent}>
             Well, I am Rick and you cannot do a damn thing about it.
-          </div>
-          <div className={classes.message__imageContainer}>
+          </div> */}
+          {/* <div className={classes.message__imageContainer}>
             <img
               src="https://i.pinimg.com/originals/9e/0c/d2/9e0cd25afaefd1993664eeb0d17f7171.jpg"
               alt=""
               className={classes.message__image}
             />
-          </div>
+          </div> */}
+
+          {/* <div className={classes.video__container}>
+            <ReactPlayer
+              id="myVedio"
+              url={"https://youtu.be/sjvlW0AzKlY"}
+              width="65%"
+              height="90%"
+              playing={true}
+              controls={true}
+              volume={1}
+              progressInterval={5000}
+              pip={true}
+            />
+          </div> */}
+
+          <ThemeProvider theme={muiTheme}>
+            <div className={classes.audio__container}>
+              <AudioPlayer
+                elevation={1}
+                width="100%"
+                variation="default"
+                spacing={2}
+                order="standart"
+                preload="auto"
+                src={
+                  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                }
+                useStyles={audioPlayerStyle}
+              />
+            </div>
+          </ThemeProvider>
 
           <div className={classes.emoji__countButtonContainer}>
             <div className={classes.emoji__countButtondiv}>
-              <IconButton style={{ color: "green" }}>
-                <AiFillLike />
+              <IconButton style={{ color: "green" }} size="small">
+                <AiFillLike className={classes.emoji__countButton} />
                 <Typography
                   variant="subtitle2"
                   className={classes.emoji__count}
@@ -152,7 +245,7 @@ function Message() {
               </IconButton>
             </div>
             <div className={classes.emoji__countButtondiv}>
-              <IconButton style={{color: "red"}}>
+              <IconButton style={{ color: "red" }} size="small">
                 <AiFillHeart className={classes.emoji__countButton} />
                 <Typography
                   variant="subtitle2"
@@ -163,7 +256,7 @@ function Message() {
               </IconButton>
             </div>
             <div className={classes.emoji__countButtondiv}>
-              <IconButton style={{ color: "orange" }}>
+              <IconButton style={{ color: "orange" }} size="small">
                 <AiFillFire className={classes.emoji__countButton} />
                 <Typography
                   variant="subtitle2"
@@ -177,16 +270,16 @@ function Message() {
         </div>
 
         <div className={classes.message__emojiBtnContainer} style={style}>
-          <IconButton >
+          <IconButton size="small">
             <AiFillLike className={classes.emoji__button} />
           </IconButton>
-          <IconButton>
+          <IconButton size="small">
             <AiFillFire className={classes.emoji__button} />
           </IconButton>
-          <IconButton>
+          <IconButton size="small">
             <AiFillHeart className={classes.emoji__button} />
           </IconButton>
-          <IconButton>
+          <IconButton size="small">
             <AiFillDelete
               className={classes.emoji__button}
               style={{ color: "red" }}
