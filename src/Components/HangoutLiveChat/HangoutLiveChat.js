@@ -271,7 +271,6 @@ function HangoutLiveChat(props) {
               key={hangoutMessage.id}
               hangoutMessageId={hangoutMessage.id}
               messageData={hangoutMessage.data}
-              url={blobURL}
             />
           ))}
           <Message />

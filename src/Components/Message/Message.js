@@ -10,6 +10,8 @@ import { AiFillDelete } from "react-icons/ai";
 import ReactPlayer from "react-player/lazy";
 import AudioPlayer from "material-ui-audio-player";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+import { useParams } from "react-router-dom";
+import { database } from "../../Firebase/firebase";
 
 const muiTheme = createMuiTheme({});
 
@@ -148,9 +150,109 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Message({ url }) {
+function Message({ messageData, hangoutMessageId }) {
   const classes = useStyles();
   const [style, setStyle] = useState({ display: "none" });
+  const [deleteModal, setDeleteModal] = useState(false);
+
+  const userId = JSON.parse(localStorage.getItem("userDetails")).uid;
+  const messageUserId = messageData.userId;
+  const date = messageData.timestamp.toDate();
+  const day = date.getDate();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const time = `${day}/${month}/${year} ${hour}:${minute}`;
+
+  const numLikes = messageData.likeCount;
+  const numFire = messageData.fireCount;
+  const numHeart = messageData.heartCount;
+
+  const userLiked = messageData.likes[userId];
+  const userFire = messageData.fire[userId];
+  const userHeart = messageData.heart[userId];
+
+  const messageMedia = messageData.messageMedia;
+  const messageAudio = messageData.audio;
+  const hangoutId = useParams().id;
+
+  const selectedLike = userLiked ? { color: "green" } : null;
+
+  const selectedHeart = userHeart ? { color: "red" } : null;
+
+  const selectedFire = userFire ? { color: "orange" } : null;
+
+  function handleHeartClick() {
+    const hangoutMessage = database
+      .collection("hangouts")
+      .doc(hangoutId)
+      .collection("messages")
+      .doc(hangoutMessageId);
+
+    //Note: Transaction is used when you need to get some data
+    // from the database then make some calculation with it and store it back to the db.
+
+    if (userHeart) {
+      return () => {
+        database
+          .runTransaction((transaction) => {
+            return transaction.get(hangoutMessage).then((doc) => {
+              if (!doc) {
+                console.log("No Document Found");
+                return;
+              }
+
+              let newHeartCount = doc.data().heartCount - 1;
+              let newHeart = doc.data().heart;
+              newHeart[userId] = false;
+
+              transaction.update(hangoutMessage, {
+                hearCount: newHeartCount,
+                heart: newHeart,
+              });
+            });
+          })
+          .then(() => {
+            console.log("Succesfully Disliked");
+          })
+          .catch((error) => {
+            console.log("We found and error", error);
+          });
+      };
+    } else {
+      return () => {
+        database
+          .runTransaction((transaction) => {
+            return transaction.get(hangoutMessage).then((doc) => {
+              if (!doc) {
+                console.log("No Document Found");
+                return;
+              }
+
+              let newHeartCount = doc.data().heartCount + 1;
+              let newHeart = doc.data().heart;
+              newHeart[userId] = true;
+
+              transaction.update(hangoutMessage, {
+                hearCount: newHeartCount,
+                heart: newHeart,
+              });
+            });
+          })
+          .then(() => {
+            console.log("Succesfully Liked");
+          })
+          .catch((error) => {
+            console.log("We found and error", error);
+          });
+      };
+    }
+  }
+
+  function handleDeleteModal() {
+    setDeleteModal(!deleteModal);
+  }
 
   function handleMouseEnter() {
     setStyle({ display: "block" });
@@ -225,9 +327,7 @@ function Message({ url }) {
                 spacing={2}
                 order="standart"
                 preload="auto"
-                src={
-                  `${url}`
-                }
+                src={""}
                 useStyles={audioPlayerStyle}
               />
             </div>
