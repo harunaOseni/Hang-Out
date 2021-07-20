@@ -214,7 +214,7 @@ function Message({ messageData, hangoutMessageId }) {
             });
           })
           .then(() => {
-            console.log("Succesfully Disliked");
+            console.log("Succesfully Hearted");
           })
           .catch((error) => {
             console.log("We found and error", error);
@@ -237,6 +237,134 @@ function Message({ messageData, hangoutMessageId }) {
               transaction.update(hangoutMessage, {
                 hearCount: newHeartCount,
                 heart: newHeart,
+              });
+            });
+          })
+          .then(() => {
+            console.log("Succesfully Dishearted");
+          })
+          .catch((error) => {
+            console.log("We found and error", error);
+          });
+      };
+    }
+  }
+
+  function handleFireClick() {
+    const hangoutMessage = database
+      .collection("hangouts")
+      .doc(hangoutId)
+      .collection("messages")
+      .doc(hangoutMessageId);
+
+    if (userFire) {
+      return () => {
+        database
+          .runTransaction((transaction) => {
+            return transaction.get(hangoutMessage).then((doc) => {
+              if (!doc) {
+                console.log("No Document Found");
+                return;
+              }
+
+              let newFireCount = doc.data().fireCount - 1;
+              let newFire = doc.data().fire;
+              newFire[userId] = false;
+
+              transaction.update(hangoutMessage, {
+                fireCount: newFireCount,
+                fire: newFire,
+              });
+            });
+          })
+          .then(() => {
+            console.log("Succesfully Disliked With a Fire");
+          })
+          .catch((error) => {
+            console.log("We found and error", error);
+          });
+      };
+    } else {
+      return () => {
+        database
+          .runTransaction((transaction) => {
+            return transaction.get(hangoutMessage).then((doc) => {
+              if (!doc) {
+                console.log("No Document Found");
+                return;
+              }
+
+              let newFireCount = doc.data().fireCount + 1;
+              let newFire = doc.data().fire;
+              newFire[userId] = true;
+
+              transaction.update(hangoutMessage, {
+                fireCount: newFireCount,
+                fire: newFire,
+              });
+            });
+          })
+          .then(() => {
+            console.log("Succesfully Liked With a Fire");
+          })
+          .catch((error) => {
+            console.log("We found and error", error);
+          });
+      };
+    }
+  }
+
+  function handleLikeClick() {
+    const hangoutMessage = database
+      .collection("hangouts")
+      .doc(hangoutId)
+      .collection("messages")
+      .doc(hangoutMessageId);
+
+    if (userLiked) {
+      return () => {
+        return database
+          .runTransaction((transaction) => {
+            return transaction.get(hangoutMessage).then((doc) => {
+              if (!doc) {
+                console.log("No Document Found");
+                return;
+              }
+
+              let newLikeCount = doc.data().likeCount - 1;
+              let newLikes = doc.data().likes;
+              newLikes[userId] = false;
+
+              transaction.update(hangoutMessage, {
+                likeCount: newLikeCount,
+                likes: newLikes,
+              });
+            });
+          })
+          .then(() => {
+            console.log("Succesfully Disliked");
+          })
+          .catch((error) => {
+            console.log("We found and error", error);
+          });
+      };
+    } else {
+      return () => {
+        database
+          .runTransaction((transaction) => {
+            return transaction.get(hangoutMessage).then((doc) => {
+              if (!doc) {
+                console.log("No Document Found");
+                return;
+              }
+
+              let newLikeCount = doc.data().likeCount + 1;
+              let newLikes = doc.data().likes;
+              newLikes[userId] = true;
+
+              transaction.update(hangoutMessage, {
+                likeCount: newLikeCount,
+                likes: newLikes,
               });
             });
           })
