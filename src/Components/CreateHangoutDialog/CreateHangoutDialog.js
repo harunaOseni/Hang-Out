@@ -40,6 +40,8 @@ function CreateHangoutDialog({
   showDialog,
   progress,
   progressBar,
+  setProgressBar,
+  setProgress,
 }) {
   const [hangoutName, setHangoutName] = useState(null);
   const [hangoutPictureFile, setHangoutPictureFile] = useState(null);
@@ -57,8 +59,17 @@ function CreateHangoutDialog({
     event.preventDefault();
     if (hangoutName && hangoutPictureFile) {
       CreateAHangout(hangoutName, hangoutPictureFile);
-      showDialog();
+      if (progress !== 100) {
+        setProgressBar({ display: "block" });
+      } else {
+        setProgressBar({ display: "none" });
+        setProgress(0);
+        showDialog();
+      }
     }
+    // setProgressBar({ display: "none" });
+    // setProgress(0);
+    // showDialog();
   }
   return (
     <div>

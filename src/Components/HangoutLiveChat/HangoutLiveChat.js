@@ -22,6 +22,8 @@ import FileUploadModal from "../FileUploadModal/FileUploadModal";
 import MicRecorder from "mic-recorder-to-mp3";
 import { FaRegStopCircle } from "react-icons/fa";
 import { useStopwatch } from "react-timer-hook";
+import Recorder from "react-mp3-recorder";
+import { storage } from "../../Firebase/firebase";
 
 const useStyles = makeStyles((theme) => ({
   hangout__liveChat: {
@@ -83,10 +85,6 @@ const useStyles = makeStyles((theme) => ({
 
 function HangoutLiveChat(props) {
   const classes = useStyles();
-  const Mp3Recorder = new MicRecorder({
-    bitRate: 128,
-  });
-
   const { seconds, minutes, start, reset, pause } = useStopwatch({
     autoStart: false,
   });
@@ -98,37 +96,8 @@ function HangoutLiveChat(props) {
   const [emojiState, setEmojiState] = useState(false);
   const [hangoutMessages, setToHangoutMessages] = useState([]);
   const [fileUploadModalState, setFileUploadModalState] = useState(false);
-  const [recording, setRecording] = useState(false);
   const [blobURL, setBlobURL] = useState("");
   const [permissionBlocked, setPermissionBlocked] = useState(false);
-
-  function handleStartRecording() {
-    if (permissionBlocked) {
-      console.log("Permission Blocked");
-    } else {
-      Mp3Recorder.start()
-        .then(() => {
-          setRecording(true);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }
-
-  function handleStopRecording() {
-    Mp3Recorder.stop()
-      .getMp3()
-      .then(([buffer, blob]) => {
-        const blobURL = URL.createObjectURL(blob);
-        setRecording(false);
-        setBlobURL(blobURL);
-        console.log(blobURL);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
 
   useEffect(() => {
     navigator.getUserMedia(
@@ -170,6 +139,11 @@ function HangoutLiveChat(props) {
     setEmojiState(false);
   }, [parameter]);
 
+  function handleRecordingComplete(blob) {
+    setBlobURL(blob);
+    handleUploadToStorageAndGetFileUrl();
+  }
+
   function handleFileUploadModal() {
     setFileUploadModalState(!fileUploadModalState);
   }
@@ -193,7 +167,7 @@ function HangoutLiveChat(props) {
     setEmojiState(false);
   }
 
-  function handleSendUserMessage(event) {
+  function handleSendUserMessage(event, blobUrl) {
     event.preventDefault();
     if (userMessage && parameter.id) {
       const userDetails = JSON.parse(localStorage.getItem("userDetails"));
@@ -208,6 +182,7 @@ function HangoutLiveChat(props) {
         const heartCount = 0;
         const heart = {};
         const messageMedia = null;
+        const audio = blobUrl;
         const messageInfo = {
           text: userMessage,
           timestamp: firebase.firestore.Timestamp.now(),
@@ -221,6 +196,7 @@ function HangoutLiveChat(props) {
           heartCount: heartCount,
           heart: heart,
           messageMedia: messageMedia,
+          audio: audio,
         };
 
         database
@@ -239,6 +215,34 @@ function HangoutLiveChat(props) {
       setUserMessage("");
       setEmojiState(false);
     }
+  }
+
+  function handleUploadToStorageAndGetFileUrl(event) {
+    event.preventDefault();
+    const uploadTask = storage.ref(`Audio/${blobURL.name}`).put(blobURL);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+      },
+
+      (error) => {
+        console.log(error);
+      },
+
+      () => {
+        uploadTask.snapshot.ref
+          .downloadURL()
+          .then((url) => {
+            handleSendUserMessage(event, url);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    );
   }
 
   function handleEmojiState(event) {
@@ -285,11 +289,9 @@ function HangoutLiveChat(props) {
             id="file__input"
           />
 
-          {recording === false ? (
-            <IconButton component="label" htmlFor="file__input">
-              <FcAddImage />
-            </IconButton>
-          ) : null}
+          <IconButton component="label" htmlFor="file__input">
+            <FcAddImage />
+          </IconButton>
 
           {emojiState ? (
             <Picker
@@ -299,20 +301,15 @@ function HangoutLiveChat(props) {
             />
           ) : null}
 
-          {recording === false ? (
-            <IconButton component="button" onClick={handleEmojiState}>
-              <GrEmoji className={classes.iconStyling} size={25} />
-            </IconButton>
-          ) : (
-            <Typography
-              variant="subtitle1"
-              style={{ fontWeight: "bold", paddingLeft: "10px", color: "red" }}
-            >
-              {`${minutes}:${seconds}`}
-            </Typography>
-          )}
+          <IconButton component="button" onClick={handleEmojiState}>
+            <GrEmoji className={classes.iconStyling} size={25} />
+          </IconButton>
 
-          <form autoComplete="off" className={classes.form__input}>
+          <form
+            autoComplete="off"
+            className={classes.form__input}
+            onSubmit={handleUserMessage}
+          >
             <TextField
               id="outline-basic"
               variant="outlined"
@@ -324,39 +321,17 @@ function HangoutLiveChat(props) {
               onChange={handleUserMessage}
               className={classes.form__inputTextField}
             />
-
             {/* A Controlled Component is one that takes its current value 
             through props and notifies changes through callbacks like onChange. */}
-
-            {recording === false ? (
-              <IconButton
-                component="button"
-                onClick={() => {
-                  handleStartRecording();
-                  setRecording(true);
-                  start();
-                }}
-              >
-                <MdKeyboardVoice />
-              </IconButton>
-            ) : (
-              <IconButton
-                component="button"
-                style={{ color: "red" }}
-                onClick={() => {
-                  setRecording(false);
-                  handleStopRecording();
-                }}
-              >
-                <MdKeyboardVoice />
-              </IconButton>
-            )}
-
-            {recording === false ? (
-              <IconButton type="submit" onClick={handleSendUserMessage}>
-                <IoMdSend />
-              </IconButton>
-            ) : null}
+            <Recorder
+              onRecordingComplete={handleRecordingComplete}
+              onRecordingError={(error) => {
+                console.log(`Here's the error, ${error}`);
+              }}
+            />
+            <IconButton type="submit" onClick={handleSendUserMessage}>
+              <IoMdSend size={30} />
+            </IconButton>
           </form>
         </Grid>
       </div>

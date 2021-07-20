@@ -86,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginLeft: "10px",
     paddingTop: "3px",
+    width: "100%",
   },
 
   message__image: {
@@ -224,7 +225,9 @@ function Message({ url }) {
                 spacing={2}
                 order="standart"
                 preload="auto"
-                src={url}
+                src={
+                  `${url}`
+                }
                 useStyles={audioPlayerStyle}
               />
             </div>

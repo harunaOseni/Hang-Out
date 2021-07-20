@@ -160,6 +160,8 @@ function Hangout() {
           showDialog={handleShowCreateHangoutDialog}
           progress={progress}
           progressBar={progressBar}
+          setProgressBar={setProgressBar}
+          setProgress={setProgress}
         />
       ) : null}
 

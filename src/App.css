@@ -14,7 +14,17 @@ body {
 }
 
 .makeStyles-audio__container-45 {
-    width: 55vw !important;
+  width: 55vw !important;
+}
+
+.styles_button__3Vugn {
+  width: 30px !important;
+  height: 35px !important;
+}
+
+.styles_container__2pRR5 {
+  padding-top: 10px !important;
+  margin-right: 10px !important;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -24,7 +34,7 @@ body {
 }
 
 .MuiCircularProgress-colorPrimary {
-    color: white !important;
+  color: white !important;
 }
 
 .MuiOutlinedInput-notchedOutline {
