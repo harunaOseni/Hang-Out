@@ -103,8 +103,10 @@ function FileUploadModal({ handleFileUploadModal, mediaFile }) {
       },
 
       () => {
-        uploadTask.snapshot.ref
-          .downloadURL()
+        storage
+          .ref("Media")
+          .child(mediaFile.name) 
+          .getDownloadURL()
           .then((url) => {
             handleSendUserMessage(event, url);
           })

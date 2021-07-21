@@ -14,15 +14,10 @@ import { IoMdSend } from "react-icons/io";
 import { GrEmoji } from "react-icons/gr";
 import { FcAddImage } from "react-icons/fc";
 import { Picker } from "emoji-mart";
-import { MdKeyboardVoice } from "react-icons/md";
 import "emoji-mart/css/emoji-mart.css";
 import userEvent from "@testing-library/user-event";
 import { FaStamp } from "react-icons/fa";
 import FileUploadModal from "../FileUploadModal/FileUploadModal";
-import MicRecorder from "mic-recorder-to-mp3";
-import { FaRegStopCircle } from "react-icons/fa";
-import { useStopwatch } from "react-timer-hook";
-import Recorder from "react-mp3-recorder";
 import { storage } from "../../Firebase/firebase";
 
 const useStyles = makeStyles((theme) => ({
@@ -83,33 +78,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function HangoutLiveChat(props) {
+function HangoutLiveChat() {
   const classes = useStyles();
-  const { seconds, minutes, start, reset, pause } = useStopwatch({
-    autoStart: false,
-  });
-
   const [hangoutName, setHangoutName] = useState("");
   const parameter = useParams();
   const [mediaFile, setMediaFile] = useState(null);
   const [userMessage, setUserMessage] = useState("");
   const [emojiState, setEmojiState] = useState(false);
-  const [hangoutMessages, setToHangoutMessages] = useState([]);
+  const [hangoutMessages, setHangoutMessages] = useState([]);
   const [fileUploadModalState, setFileUploadModalState] = useState(false);
-  const [blobURL, setBlobURL] = useState("");
-  const [permissionBlocked, setPermissionBlocked] = useState(false);
 
-  useEffect(() => {
-    navigator.getUserMedia(
-      { audio: true },
-      () => {
-        setPermissionBlocked(false);
-      },
-      () => {
-        setPermissionBlocked(true);
-      }
-    );
-  }, []);
+  console.log(hangoutMessages);
 
   useEffect(() => {
     if (parameter.id) {
@@ -119,30 +98,31 @@ function HangoutLiveChat(props) {
         .onSnapshot((snapshot) => {
           setHangoutName(snapshot.data().hangoutName);
         });
-
-      database
-        .collection("hangouts")
-        .doc(parameter.id)
-        .collection("messages")
-        .orderBy("timestamp", "asc")
-        .onSnapshot((snapshot) => {
-          setToHangoutMessages(
-            snapshot.docs.map((doc) => ({
-              id: doc.id,
-              data: doc.data(),
-            }))
-          );
-        });
     }
 
     setUserMessage("");
     setEmojiState(false);
   }, [parameter]);
 
-  function handleRecordingComplete(blob) {
-    setBlobURL(blob);
-    handleUploadToStorageAndGetFileUrl();
-  }
+  useEffect(() => {
+    if (parameter.id) {
+      database
+        .collection("hangouts")
+        .doc(parameter.id)
+        .collection("messages")
+        .orderBy("timestamp", "asc")
+        .onSnapshot((snapshot) => {
+          setHangoutMessages(
+            snapshot.docs.map((doc) => {
+              return {
+                id: doc.id,
+                data: doc.data(),
+              };
+            })
+          );
+        });
+    }
+  }, [parameter]);
 
   function handleFileUploadModal() {
     setFileUploadModalState(!fileUploadModalState);
@@ -167,7 +147,7 @@ function HangoutLiveChat(props) {
     setEmojiState(false);
   }
 
-  function handleSendUserMessage(event, blobUrl) {
+  function handleSendUserMessage(event) {
     event.preventDefault();
     if (userMessage && parameter.id) {
       const userDetails = JSON.parse(localStorage.getItem("userDetails"));
@@ -182,7 +162,6 @@ function HangoutLiveChat(props) {
         const heartCount = 0;
         const heart = {};
         const messageMedia = null;
-        const audio = blobUrl;
         const messageInfo = {
           text: userMessage,
           timestamp: firebase.firestore.Timestamp.now(),
@@ -196,7 +175,6 @@ function HangoutLiveChat(props) {
           heartCount: heartCount,
           heart: heart,
           messageMedia: messageMedia,
-          audio: audio,
         };
 
         database
@@ -215,34 +193,6 @@ function HangoutLiveChat(props) {
       setUserMessage("");
       setEmojiState(false);
     }
-  }
-
-  function handleUploadToStorageAndGetFileUrl(event) {
-    event.preventDefault();
-    const uploadTask = storage.ref(`Audio/${blobURL.name}`).put(blobURL);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-      },
-
-      (error) => {
-        console.log(error);
-      },
-
-      () => {
-        uploadTask.snapshot.ref
-          .downloadURL()
-          .then((url) => {
-            handleSendUserMessage(event, url);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    );
   }
 
   function handleEmojiState(event) {
@@ -322,12 +272,6 @@ function HangoutLiveChat(props) {
             />
             {/* A Controlled Component is one that takes its current value 
             through props and notifies changes through callbacks like onChange. */}
-            <Recorder
-              onRecordingComplete={handleRecordingComplete}
-              onRecordingError={(error) => {
-                console.log(`Here's the error, ${error}`);
-              }}
-            />
             <IconButton type="submit" onClick={handleSendUserMessage}>
               <IoMdSend size={30} />
             </IconButton>

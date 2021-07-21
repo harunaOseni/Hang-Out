@@ -155,232 +155,249 @@ function Message({ messageData, hangoutMessageId }) {
   const [style, setStyle] = useState({ display: "none" });
   const [deleteModal, setDeleteModal] = useState(false);
 
-  const userId = JSON.parse(localStorage.getItem("userDetails")).uid;
-  const messageUserId = messageData.userId;
-  const date = messageData.timestamp.toDate();
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const hour = date.getHours();
-  const minute = date.getMinutes();
-  const time = `${day}/${month}/${year} ${hour}:${minute}`;
+  console.log(messageData);
 
-  const numLikes = messageData.likeCount;
-  const numFire = messageData.fireCount;
-  const numHeart = messageData.heartCount;
+  // const userId = JSON.parse(localStorage.getItem("userDetails")).uid;
+  // const messageUserId = messageData.userId;
+  // const date = messageData.timestamp.toDate();
+  // const day = date.getDate();
+  // const year = date.getFullYear();
+  // const month = date.getMonth();
+  // const hour = date.getHours();
+  // const minute = date.getMinutes();
+  // const time = `${day}/${month}/${year} ${hour}:${minute}`;
 
-  const userLiked = messageData.likes[userId];
-  const userFire = messageData.fire[userId];
-  const userHeart = messageData.heart[userId];
+  // const numLikes = messageData.likeCount;
+  // const numFire = messageData.fireCount;
+  // const numHeart = messageData.heartCount;
 
-  const messageMedia = messageData.messageMedia;
-  const messageAudio = messageData.audio;
-  const hangoutId = useParams().id;
+  // const userLiked = messageData.likes[userId];
+  // const userFire = messageData.fire[userId];
+  // const userHeart = messageData.heart[userId];
 
-  const selectedLike = userLiked ? { color: "green" } : null;
+  // const messageMedia = messageData.messageMedia;
+  // const messageAudio = messageData.audio;
+  // const hangoutId = useParams().id;
 
-  const selectedHeart = userHeart ? { color: "red" } : null;
+  // const selectedLike = userLiked ? { color: "green" } : null;
 
-  const selectedFire = userFire ? { color: "orange" } : null;
+  // const selectedHeart = userHeart ? { color: "red" } : null;
 
-  function handleHeartClick() {
-    const hangoutMessage = database
-      .collection("hangouts")
-      .doc(hangoutId)
-      .collection("messages")
-      .doc(hangoutMessageId);
+  // const selectedFire = userFire ? { color: "orange" } : null;
 
-    //Note: Transaction is used when you need to get some data
-    // from the database then make some calculation with it and store it back to the db.
+  // function handleHeartClick() {
+  //   const hangoutMessage = database
+  //     .collection("hangouts")
+  //     .doc(hangoutId)
+  //     .collection("messages")
+  //     .doc(hangoutMessageId);
 
-    if (userHeart) {
-      return () => {
-        database
-          .runTransaction((transaction) => {
-            return transaction.get(hangoutMessage).then((doc) => {
-              if (!doc) {
-                console.log("No Document Found");
-                return;
-              }
+  //   //Note: Transaction is used when you need to get some data
+  //   // from the database then make some calculation with it and store it back to the db.
 
-              let newHeartCount = doc.data().heartCount - 1;
-              let newHeart = doc.data().heart;
-              newHeart[userId] = false;
+  //   if (userHeart) {
+  //     return () => {
+  //       database
+  //         .runTransaction((transaction) => {
+  //           return transaction.get(hangoutMessage).then((doc) => {
+  //             if (!doc) {
+  //               console.log("No Document Found");
+  //               return;
+  //             }
 
-              transaction.update(hangoutMessage, {
-                hearCount: newHeartCount,
-                heart: newHeart,
-              });
-            });
-          })
-          .then(() => {
-            console.log("Succesfully Hearted");
-          })
-          .catch((error) => {
-            console.log("We found and error", error);
-          });
-      };
-    } else {
-      return () => {
-        database
-          .runTransaction((transaction) => {
-            return transaction.get(hangoutMessage).then((doc) => {
-              if (!doc) {
-                console.log("No Document Found");
-                return;
-              }
+  //             let newHeartCount = doc.data().heartCount - 1;
+  //             let newHeart = doc.data().heart;
+  //             newHeart[userId] = false;
 
-              let newHeartCount = doc.data().heartCount + 1;
-              let newHeart = doc.data().heart;
-              newHeart[userId] = true;
+  //             transaction.update(hangoutMessage, {
+  //               hearCount: newHeartCount,
+  //               heart: newHeart,
+  //             });
+  //           });
+  //         })
+  //         .then(() => {
+  //           console.log("Succesfully Hearted");
+  //         })
+  //         .catch((error) => {
+  //           console.log("We found and error", error);
+  //         });
+  //     };
+  //   } else {
+  //     return () => {
+  //       database
+  //         .runTransaction((transaction) => {
+  //           return transaction.get(hangoutMessage).then((doc) => {
+  //             if (!doc) {
+  //               console.log("No Document Found");
+  //               return;
+  //             }
 
-              transaction.update(hangoutMessage, {
-                hearCount: newHeartCount,
-                heart: newHeart,
-              });
-            });
-          })
-          .then(() => {
-            console.log("Succesfully Dishearted");
-          })
-          .catch((error) => {
-            console.log("We found and error", error);
-          });
-      };
-    }
-  }
+  //             let newHeartCount = doc.data().heartCount + 1;
+  //             let newHeart = doc.data().heart;
+  //             newHeart[userId] = true;
 
-  function handleFireClick() {
-    const hangoutMessage = database
-      .collection("hangouts")
-      .doc(hangoutId)
-      .collection("messages")
-      .doc(hangoutMessageId);
+  //             transaction.update(hangoutMessage, {
+  //               hearCount: newHeartCount,
+  //               heart: newHeart,
+  //             });
+  //           });
+  //         })
+  //         .then(() => {
+  //           console.log("Succesfully Dishearted");
+  //         })
+  //         .catch((error) => {
+  //           console.log("We found and error", error);
+  //         });
+  //     };
+  //   }
+  // }
 
-    if (userFire) {
-      return () => {
-        database
-          .runTransaction((transaction) => {
-            return transaction.get(hangoutMessage).then((doc) => {
-              if (!doc) {
-                console.log("No Document Found");
-                return;
-              }
+  // function handleFireClick() {
+  //   const hangoutMessage = database
+  //     .collection("hangouts")
+  //     .doc(hangoutId)
+  //     .collection("messages")
+  //     .doc(hangoutMessageId);
 
-              let newFireCount = doc.data().fireCount - 1;
-              let newFire = doc.data().fire;
-              newFire[userId] = false;
+  //   if (userFire) {
+  //     return () => {
+  //       database
+  //         .runTransaction((transaction) => {
+  //           return transaction.get(hangoutMessage).then((doc) => {
+  //             if (!doc) {
+  //               console.log("No Document Found");
+  //               return;
+  //             }
 
-              transaction.update(hangoutMessage, {
-                fireCount: newFireCount,
-                fire: newFire,
-              });
-            });
-          })
-          .then(() => {
-            console.log("Succesfully Disliked With a Fire");
-          })
-          .catch((error) => {
-            console.log("We found and error", error);
-          });
-      };
-    } else {
-      return () => {
-        database
-          .runTransaction((transaction) => {
-            return transaction.get(hangoutMessage).then((doc) => {
-              if (!doc) {
-                console.log("No Document Found");
-                return;
-              }
+  //             let newFireCount = doc.data().fireCount - 1;
+  //             let newFire = doc.data().fire;
+  //             newFire[userId] = false;
 
-              let newFireCount = doc.data().fireCount + 1;
-              let newFire = doc.data().fire;
-              newFire[userId] = true;
+  //             transaction.update(hangoutMessage, {
+  //               fireCount: newFireCount,
+  //               fire: newFire,
+  //             });
+  //           });
+  //         })
+  //         .then(() => {
+  //           console.log("Succesfully Disliked With a Fire");
+  //         })
+  //         .catch((error) => {
+  //           console.log("We found and error", error);
+  //         });
+  //     };
+  //   } else {
+  //     return () => {
+  //       database
+  //         .runTransaction((transaction) => {
+  //           return transaction.get(hangoutMessage).then((doc) => {
+  //             if (!doc) {
+  //               console.log("No Document Found");
+  //               return;
+  //             }
 
-              transaction.update(hangoutMessage, {
-                fireCount: newFireCount,
-                fire: newFire,
-              });
-            });
-          })
-          .then(() => {
-            console.log("Succesfully Liked With a Fire");
-          })
-          .catch((error) => {
-            console.log("We found and error", error);
-          });
-      };
-    }
-  }
+  //             let newFireCount = doc.data().fireCount + 1;
+  //             let newFire = doc.data().fire;
+  //             newFire[userId] = true;
 
-  function handleLikeClick() {
-    const hangoutMessage = database
-      .collection("hangouts")
-      .doc(hangoutId)
-      .collection("messages")
-      .doc(hangoutMessageId);
+  //             transaction.update(hangoutMessage, {
+  //               fireCount: newFireCount,
+  //               fire: newFire,
+  //             });
+  //           });
+  //         })
+  //         .then(() => {
+  //           console.log("Succesfully Liked With a Fire");
+  //         })
+  //         .catch((error) => {
+  //           console.log("We found and error", error);
+  //         });
+  //     };
+  //   }
+  // }
 
-    if (userLiked) {
-      return () => {
-        return database
-          .runTransaction((transaction) => {
-            return transaction.get(hangoutMessage).then((doc) => {
-              if (!doc) {
-                console.log("No Document Found");
-                return;
-              }
+  // function handleLikeClick() {
+  //   const hangoutMessage = database
+  //     .collection("hangouts")
+  //     .doc(hangoutId)
+  //     .collection("messages")
+  //     .doc(hangoutMessageId);
 
-              let newLikeCount = doc.data().likeCount - 1;
-              let newLikes = doc.data().likes;
-              newLikes[userId] = false;
+  //   if (userLiked) {
+  //     return () => {
+  //       return database
+  //         .runTransaction((transaction) => {
+  //           return transaction.get(hangoutMessage).then((doc) => {
+  //             if (!doc) {
+  //               console.log("No Document Found");
+  //               return;
+  //             }
 
-              transaction.update(hangoutMessage, {
-                likeCount: newLikeCount,
-                likes: newLikes,
-              });
-            });
-          })
-          .then(() => {
-            console.log("Succesfully Disliked");
-          })
-          .catch((error) => {
-            console.log("We found and error", error);
-          });
-      };
-    } else {
-      return () => {
-        database
-          .runTransaction((transaction) => {
-            return transaction.get(hangoutMessage).then((doc) => {
-              if (!doc) {
-                console.log("No Document Found");
-                return;
-              }
+  //             let newLikeCount = doc.data().likeCount - 1;
+  //             let newLikes = doc.data().likes;
+  //             newLikes[userId] = false;
 
-              let newLikeCount = doc.data().likeCount + 1;
-              let newLikes = doc.data().likes;
-              newLikes[userId] = true;
+  //             transaction.update(hangoutMessage, {
+  //               likeCount: newLikeCount,
+  //               likes: newLikes,
+  //             });
+  //           });
+  //         })
+  //         .then(() => {
+  //           console.log("Succesfully Disliked");
+  //         })
+  //         .catch((error) => {
+  //           console.log("We found and error", error);
+  //         });
+  //     };
+  //   } else {
+  //     return () => {
+  //       database
+  //         .runTransaction((transaction) => {
+  //           return transaction.get(hangoutMessage).then((doc) => {
+  //             if (!doc) {
+  //               console.log("No Document Found");
+  //               return;
+  //             }
 
-              transaction.update(hangoutMessage, {
-                likeCount: newLikeCount,
-                likes: newLikes,
-              });
-            });
-          })
-          .then(() => {
-            console.log("Succesfully Liked");
-          })
-          .catch((error) => {
-            console.log("We found and error", error);
-          });
-      };
-    }
-  }
+  //             let newLikeCount = doc.data().likeCount + 1;
+  //             let newLikes = doc.data().likes;
+  //             newLikes[userId] = true;
 
-  function handleDeleteModal() {
-    setDeleteModal(!deleteModal);
-  }
+  //             transaction.update(hangoutMessage, {
+  //               likeCount: newLikeCount,
+  //               likes: newLikes,
+  //             });
+  //           });
+  //         })
+  //         .then(() => {
+  //           console.log("Succesfully Liked");
+  //         })
+  //         .catch((error) => {
+  //           console.log("We found and error", error);
+  //         });
+  //     };
+  //   }
+  // }
+
+  // function handleDeleteMessage(id) {
+  //   database
+  //     .collection("hangouts")
+  //     .doc(hangoutId)
+  //     .collection("messages")
+  //     .doc(id)
+  //     .delete()
+  //     .then(() => {
+  //       console.log("Succesfully Deleted Message");
+  //     })
+  //     .catch((error) => {
+  //       console.log("We found and error", error);
+  //     });
+  // }
+
+  // function handleDeleteModal() {
+  //   setDeleteModal(!deleteModal);
+  // }
 
   function handleMouseEnter() {
     setStyle({ display: "block" });
