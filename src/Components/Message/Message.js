@@ -176,7 +176,18 @@ function Message({ messageData, hangoutMessageId }) {
 
   function isImage(url) {
     //array of image extensions
-    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "jfif", "tiff", "svg", "raw", "heic"];
+    const imageExtensions = [
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "bmp",
+      "jfif",
+      "tiff",
+      "svg",
+      "raw",
+      "heic",
+    ];
     //check if url includes one of the image extensions
     return imageExtensions.some((ext) => url.includes(ext));
   }
@@ -219,6 +230,60 @@ function Message({ messageData, hangoutMessageId }) {
       .doc(hangoutId)
       .collection("messages")
       .doc(hangoutMessageId);
+
+    if (userHeart) {
+      return database
+        .runTransaction((transaction) => {
+          // This code may get re-run multiple times if there are conflicts.
+          return transaction.get(hangoutMessage).then((doc) => {
+            if (!doc) {
+              console.log("doc not found");
+              return;
+            }
+
+            let newHeartCount = doc.data().heartCount - 1;
+            let newHeart = doc.data().heart ? doc.data().heart : {};
+            newHeart[userId] = false;
+
+            transaction.update(hangoutMessage, {
+              heartCount: newHeartCount,
+              heart: newHeart,
+            });
+          });
+        })
+        .then(() => {
+          console.log("Succesfully hated");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      return database
+        .runTransaction((transaction) => {
+          // This code may get re-run multiple times if there are conflicts.
+          return transaction.get(hangoutMessage).then((doc) => {
+            if (!doc) {
+              console.log("doc not found");
+              return;
+            }
+
+            let newHeartCount = doc.data().heartCount + 1;
+            let newHeart = doc.data().heart ? doc.data().heart : {};
+            newHeart[userId] = true;
+
+            transaction.update(hangoutMessage, {
+              heartCount: newHeartCount,
+              heart: newHeart,
+            });
+          });
+        })
+        .then(() => {
+          console.log("Succesfully Loved");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
 
   function handleFireClick() {
@@ -227,6 +292,60 @@ function Message({ messageData, hangoutMessageId }) {
       .doc(hangoutId)
       .collection("messages")
       .doc(hangoutMessageId);
+
+    if (userFire) {
+      return database
+        .runTransaction((transaction) => {
+          // This code may get re-run multiple times if there are conflicts.
+          return transaction.get(hangoutMessage).then((doc) => {
+            if (!doc) {
+              console.log("doc not found");
+              return;
+            }
+
+            let newFireCount = doc.data().fireCount - 1;
+            let newFire = doc.data().fire ? doc.data().fire : {};
+            newFire[userId] = false;
+
+            transaction.update(hangoutMessage, {
+              fireCount: newFireCount,
+              fire: newFire,
+            });
+          });
+        })
+        .then(() => {
+          console.log("Fire reaction removed succesfully");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      return database
+        .runTransaction((transaction) => {
+          // This code may get re-run multiple times if there are conflicts.
+          return transaction.get(hangoutMessage).then((doc) => {
+            if (!doc) {
+              console.log("doc not found");
+              return;
+            }
+
+            let newFireCount = doc.data().fireCount + 1;
+            let newFire = doc.data().fire ? doc.data().fire : {};
+            newFire[userId] = true;
+
+            transaction.update(hangoutMessage, {
+              fireCount: newFireCount,
+              fire: newFire,
+            });
+          });
+        })
+        .then(() => {
+          console.log("Fire reaction added succesfully");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
 
   function handleLikeClick() {
@@ -235,11 +354,65 @@ function Message({ messageData, hangoutMessageId }) {
       .doc(hangoutId)
       .collection("messages")
       .doc(hangoutMessageId);
+
+    if (userLiked) {
+      return database
+        .runTransaction((transaction) => {
+          // This code may get re-run multiple times if there are conflicts.
+          return transaction.get(hangoutMessage).then((doc) => {
+            if (!doc) {
+              console.log("doc not found");
+              return;
+            }
+
+            let newLikeCount = doc.data().likeCount - 1;
+            let newLike = doc.data().likes ? doc.data().likes : {};
+            newLike[userId] = false;
+
+            transaction.update(hangoutMessage, {
+              likeCount: newLikeCount,
+              likes: newLike,
+            });
+          });
+        })
+        .then(() => {
+          console.log("Succesfully unliked");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      return database
+        .runTransaction((transaction) => {
+          // This code may get re-run multiple times if there are conflicts.
+          return transaction.get(hangoutMessage).then((doc) => {
+            if (!doc) {
+              console.log("doc not found");
+              return;
+            }
+
+            let newLikeCount = doc.data().likeCount + 1;
+            let newLike = doc.data().likes ? doc.data().likes : {};
+            newLike[userId] = true;
+
+            transaction.update(hangoutMessage, {
+              likeCount: newLikeCount,
+              likes: newLike,
+            });
+          });
+        })
+        .then(() => {
+          console.log("Succesfully Liked");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
 
   function handleDeleteMessage(id) {
     database
-      .collection("hangouts") 
+      .collection("hangouts")
       .doc(hangoutId)
       .collection("messages")
       .doc(id)
