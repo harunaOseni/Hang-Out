@@ -43,6 +43,14 @@ const audioPlayerStyle = makeStyles((theme) => ({
       color: "rgba(43, 72, 158, 0.92)",
     },
   },
+
+  replayIcon: {
+    color: "rgba(43, 72, 158, 0.99)",
+    "&:hover": {
+      color: "rgba(43, 72, 158, 0.92)",
+    },
+  },
+
   volumeSlider: {
     color: "rgba(43, 72, 158, 0.99)",
   },
@@ -324,6 +332,7 @@ function Message({ messageData, hangoutMessageId }) {
                   preload="auto"
                   src={messageMedia}
                   useStyles={audioPlayerStyle}
+                  download={true}
                 />
               </div>
             </ThemeProvider>

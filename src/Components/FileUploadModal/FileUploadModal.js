@@ -105,7 +105,7 @@ function FileUploadModal({ handleFileUploadModal, mediaFile }) {
       () => {
         storage
           .ref("Media")
-          .child(mediaFile.name) 
+          .child(mediaFile.name)
           .getDownloadURL()
           .then((url) => {
             handleSendUserMessage(event, url);
@@ -144,14 +144,25 @@ function FileUploadModal({ handleFileUploadModal, mediaFile }) {
               src={mediaFileUrlForDisplay}
               alt="Image__toBeUploaded"
             />
-          ) : (
+          ) : null}
+
+          {mediaFile.type.match("video.*") ? (
             <video
               src={mediaFileUrlForDisplay}
               controls
               width="310"
               height="240"
             />
-          )}
+          ) : null}
+
+          {mediaFile.type.match("audio.*") ? (
+            <audio
+              src={mediaFileUrlForDisplay}
+              controls
+              width="310"
+              height="240"
+            />
+          ) : null}
         </div>
         <DialogContent>
           <form

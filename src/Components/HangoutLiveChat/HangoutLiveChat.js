@@ -208,6 +208,7 @@ function HangoutLiveChat() {
           {hangoutName} Hangout
         </Typography>
       </Grid>
+ 
       <div className={classes.message__feed}>
         <ScrollableFeed>
           {hangoutMessages.map((message) => {
