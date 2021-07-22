@@ -12,6 +12,7 @@ import AudioPlayer from "material-ui-audio-player";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { database } from "../../Firebase/firebase";
+import DeleteMessageDialog from "../DeleteMessageDialog/DeleteMessageDialog";
 
 const muiTheme = createMuiTheme({});
 
@@ -175,7 +176,7 @@ function Message({ messageData, hangoutMessageId }) {
 
   function isImage(url) {
     //array of image extensions
-    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp"];
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "jfif", "tiff", "svg", "raw", "heic"];
     //check if url includes one of the image extensions
     return imageExtensions.some((ext) => url.includes(ext));
   }
@@ -238,7 +239,7 @@ function Message({ messageData, hangoutMessageId }) {
 
   function handleDeleteMessage(id) {
     database
-      .collection("hangouts")
+      .collection("hangouts") 
       .doc(hangoutId)
       .collection("messages")
       .doc(id)
@@ -268,6 +269,15 @@ function Message({ messageData, hangoutMessageId }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {deleteModal ? (
+        <DeleteMessageDialog
+          hangoutMessageId={hangoutMessageId}
+          message={messageData.text}
+          messageMedia={messageMedia}
+          handleDeleteMessage={handleDeleteMessage}
+          handleDeleteModal={handleDeleteModal}
+        />
+      ) : null}
       <div className={classes.message__content}>
         <Avatar src={messageData.userAvatar} className={classes.user__avatar} />
 
@@ -332,7 +342,6 @@ function Message({ messageData, hangoutMessageId }) {
                   preload="auto"
                   src={messageMedia}
                   useStyles={audioPlayerStyle}
-                  download={true}
                 />
               </div>
             </ThemeProvider>
@@ -405,12 +414,15 @@ function Message({ messageData, hangoutMessageId }) {
           <IconButton size="small" onClick={handleHeartClick}>
             <AiFillHeart className={classes.emoji__button} />
           </IconButton>
-          <IconButton size="small">
-            <AiFillDelete
-              className={classes.emoji__button}
-              style={{ color: "red" }}
-            />
-          </IconButton>
+
+          {messageUserId === userId ? (
+            <IconButton size="small" onClick={handleDeleteModal}>
+              <AiFillDelete
+                className={classes.emoji__button}
+                style={{ color: "red" }}
+              />
+            </IconButton>
+          ) : null}
         </div>
       </div>
     </div>

@@ -8,7 +8,6 @@ import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import IconButton from "@material-ui/core/IconButton";
-import Divider from "@material-ui/core/Divider";
 import AddIcon from "@material-ui/icons/Add";
 import { database, storage } from "../../Firebase/firebase";
 import { SnackbarContent } from "@material-ui/core";
@@ -49,8 +48,6 @@ function Hangout() {
   const [showSnackbar, setSnackbar] = useState(false);
   const [progress, setProgress] = useState(0);
   const [progressBar, setProgressBar] = useState({ display: "none" });
-
-  //A Bunch of functions to handle the various states of the component
 
   useEffect(() => {
     database

@@ -15,10 +15,7 @@ import { GrEmoji } from "react-icons/gr";
 import { FcAddImage } from "react-icons/fc";
 import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
-import userEvent from "@testing-library/user-event";
-import { FaStamp } from "react-icons/fa";
 import FileUploadModal from "../FileUploadModal/FileUploadModal";
-import { storage } from "../../Firebase/firebase";
 
 const useStyles = makeStyles((theme) => ({
   hangout__liveChat: {
@@ -208,14 +205,14 @@ function HangoutLiveChat() {
           {hangoutName} Hangout
         </Typography>
       </Grid>
- 
+
       <div className={classes.message__feed}>
         <ScrollableFeed>
           {hangoutMessages.map((message) => {
             return (
               <Message
                 key={message.id}
-                messageId={message.id}
+                hangoutMessageId={message.id}
                 messageData={message.data}
               />
             );
@@ -266,8 +263,6 @@ function HangoutLiveChat() {
               onChange={handleUserMessage}
               className={classes.form__inputTextField}
             />
-            {/* A Controlled Component is one that takes its current value 
-            through props and notifies changes through callbacks like onChange. */}
             <IconButton type="submit" onClick={handleSendUserMessage}>
               <IoMdSend size={30} />
             </IconButton>

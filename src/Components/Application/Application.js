@@ -7,7 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
@@ -185,18 +185,21 @@ function Application({ userId }) {
   };
   const drawer = userDetails && (
     <div>
-      <Toolbar className={classes.sideToolBar}>
-        <img
-          src={
-            "https://emojigraph.org/media/facebook/call-me-hand-medium-dark-skin-tone_1f919-1f3fe.png"
-          }
-          className={classes.sideToolBarImage}
-          alt="App logo"
-        />
-        <Typography variant="h6" className={classes.sideToolBarText}>
-          HANGOUT
-        </Typography>
-      </Toolbar>
+      <Link to="/" style={{ textDecoration: "none" }}>
+        <Toolbar className={classes.sideToolBar}>
+          <img
+            src={
+              "https://emojigraph.org/media/facebook/call-me-hand-medium-dark-skin-tone_1f919-1f3fe.png"
+            }
+            className={classes.sideToolBarImage}
+            alt="App logo"
+          />
+          <Typography variant="h6" className={classes.sideToolBarText}>
+            HANGOUT
+          </Typography>
+        </Toolbar>
+      </Link>
+
       <Divider />
       <Grid className={classes.avatarGrid}>
         <div className={classes.avatarIcon}>
