@@ -155,249 +155,97 @@ function Message({ messageData, hangoutMessageId }) {
   const [style, setStyle] = useState({ display: "none" });
   const [deleteModal, setDeleteModal] = useState(false);
 
-  console.log(messageData);
+  const userId = JSON.parse(localStorage.getItem("userDetails")).uid;
+  const messageUserId = messageData.userId;
+  const date = messageData.timestamp.toDate();
+  const day = date.getDate();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const time = `${day}/${month}/${year} ${hour}:${minute}`;
 
-  // const userId = JSON.parse(localStorage.getItem("userDetails")).uid;
-  // const messageUserId = messageData.userId;
-  // const date = messageData.timestamp.toDate();
-  // const day = date.getDate();
-  // const year = date.getFullYear();
-  // const month = date.getMonth();
-  // const hour = date.getHours();
-  // const minute = date.getMinutes();
-  // const time = `${day}/${month}/${year} ${hour}:${minute}`;
+  function isImage(url) {
+    //array of image extensions
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp"];
+    //check if url includes one of the image extensions
+    return imageExtensions.some((ext) => url.includes(ext));
+  }
 
-  // const numLikes = messageData.likeCount;
-  // const numFire = messageData.fireCount;
-  // const numHeart = messageData.heartCount;
+  function isVideo(url) {
+    //array of video extensions
+    const videoExtensions = ["mp4", "webm", "ogg", "ogv"];
+    //check if url includes one of the video extensions
+    return videoExtensions.some((ext) => url.includes(ext));
+  }
 
-  // const userLiked = messageData.likes[userId];
-  // const userFire = messageData.fire[userId];
-  // const userHeart = messageData.heart[userId];
+  function isAudio(url) {
+    //array of audio extensions
+    const audioExtensions = ["mp3", "wav", "flac", "m4a", "aac", "wma"];
+    //check if url includes one of the audio extensions
+    return audioExtensions.some((ext) => url.includes(ext));
+  }
 
-  // const messageMedia = messageData.messageMedia;
-  // const messageAudio = messageData.audio;
-  // const hangoutId = useParams().id;
+  const numLikes = messageData.likeCount;
+  const numFire = messageData.fireCount;
+  const numHeart = messageData.heartCount;
 
-  // const selectedLike = userLiked ? { color: "green" } : null;
+  const userLiked = messageData.likes[userId];
+  const userFire = messageData.fire[userId];
+  const userHeart = messageData.heart[userId];
 
-  // const selectedHeart = userHeart ? { color: "red" } : null;
+  const messageMedia = messageData.messageMedia;
 
-  // const selectedFire = userFire ? { color: "orange" } : null;
+  const hangoutId = useParams().id;
 
-  // function handleHeartClick() {
-  //   const hangoutMessage = database
-  //     .collection("hangouts")
-  //     .doc(hangoutId)
-  //     .collection("messages")
-  //     .doc(hangoutMessageId);
+  const selectedLike = userLiked ? { color: "green" } : null;
 
-  //   //Note: Transaction is used when you need to get some data
-  //   // from the database then make some calculation with it and store it back to the db.
+  const selectedHeart = userHeart ? { color: "red" } : null;
 
-  //   if (userHeart) {
-  //     return () => {
-  //       database
-  //         .runTransaction((transaction) => {
-  //           return transaction.get(hangoutMessage).then((doc) => {
-  //             if (!doc) {
-  //               console.log("No Document Found");
-  //               return;
-  //             }
+  const selectedFire = userFire ? { color: "orange" } : null;
 
-  //             let newHeartCount = doc.data().heartCount - 1;
-  //             let newHeart = doc.data().heart;
-  //             newHeart[userId] = false;
+  function handleHeartClick() {
+    const hangoutMessage = database
+      .collection("hangouts")
+      .doc(hangoutId)
+      .collection("messages")
+      .doc(hangoutMessageId);
+  }
 
-  //             transaction.update(hangoutMessage, {
-  //               hearCount: newHeartCount,
-  //               heart: newHeart,
-  //             });
-  //           });
-  //         })
-  //         .then(() => {
-  //           console.log("Succesfully Hearted");
-  //         })
-  //         .catch((error) => {
-  //           console.log("We found and error", error);
-  //         });
-  //     };
-  //   } else {
-  //     return () => {
-  //       database
-  //         .runTransaction((transaction) => {
-  //           return transaction.get(hangoutMessage).then((doc) => {
-  //             if (!doc) {
-  //               console.log("No Document Found");
-  //               return;
-  //             }
+  function handleFireClick() {
+    const hangoutMessage = database
+      .collection("hangouts")
+      .doc(hangoutId)
+      .collection("messages")
+      .doc(hangoutMessageId);
+  }
 
-  //             let newHeartCount = doc.data().heartCount + 1;
-  //             let newHeart = doc.data().heart;
-  //             newHeart[userId] = true;
+  function handleLikeClick() {
+    const hangoutMessage = database
+      .collection("hangouts")
+      .doc(hangoutId)
+      .collection("messages")
+      .doc(hangoutMessageId);
+  }
 
-  //             transaction.update(hangoutMessage, {
-  //               hearCount: newHeartCount,
-  //               heart: newHeart,
-  //             });
-  //           });
-  //         })
-  //         .then(() => {
-  //           console.log("Succesfully Dishearted");
-  //         })
-  //         .catch((error) => {
-  //           console.log("We found and error", error);
-  //         });
-  //     };
-  //   }
-  // }
+  function handleDeleteMessage(id) {
+    database
+      .collection("hangouts")
+      .doc(hangoutId)
+      .collection("messages")
+      .doc(id)
+      .delete()
+      .then(() => {
+        console.log("Succesfully Deleted Message");
+      })
+      .catch((error) => {
+        console.log("We found and error", error);
+      });
+  }
 
-  // function handleFireClick() {
-  //   const hangoutMessage = database
-  //     .collection("hangouts")
-  //     .doc(hangoutId)
-  //     .collection("messages")
-  //     .doc(hangoutMessageId);
-
-  //   if (userFire) {
-  //     return () => {
-  //       database
-  //         .runTransaction((transaction) => {
-  //           return transaction.get(hangoutMessage).then((doc) => {
-  //             if (!doc) {
-  //               console.log("No Document Found");
-  //               return;
-  //             }
-
-  //             let newFireCount = doc.data().fireCount - 1;
-  //             let newFire = doc.data().fire;
-  //             newFire[userId] = false;
-
-  //             transaction.update(hangoutMessage, {
-  //               fireCount: newFireCount,
-  //               fire: newFire,
-  //             });
-  //           });
-  //         })
-  //         .then(() => {
-  //           console.log("Succesfully Disliked With a Fire");
-  //         })
-  //         .catch((error) => {
-  //           console.log("We found and error", error);
-  //         });
-  //     };
-  //   } else {
-  //     return () => {
-  //       database
-  //         .runTransaction((transaction) => {
-  //           return transaction.get(hangoutMessage).then((doc) => {
-  //             if (!doc) {
-  //               console.log("No Document Found");
-  //               return;
-  //             }
-
-  //             let newFireCount = doc.data().fireCount + 1;
-  //             let newFire = doc.data().fire;
-  //             newFire[userId] = true;
-
-  //             transaction.update(hangoutMessage, {
-  //               fireCount: newFireCount,
-  //               fire: newFire,
-  //             });
-  //           });
-  //         })
-  //         .then(() => {
-  //           console.log("Succesfully Liked With a Fire");
-  //         })
-  //         .catch((error) => {
-  //           console.log("We found and error", error);
-  //         });
-  //     };
-  //   }
-  // }
-
-  // function handleLikeClick() {
-  //   const hangoutMessage = database
-  //     .collection("hangouts")
-  //     .doc(hangoutId)
-  //     .collection("messages")
-  //     .doc(hangoutMessageId);
-
-  //   if (userLiked) {
-  //     return () => {
-  //       return database
-  //         .runTransaction((transaction) => {
-  //           return transaction.get(hangoutMessage).then((doc) => {
-  //             if (!doc) {
-  //               console.log("No Document Found");
-  //               return;
-  //             }
-
-  //             let newLikeCount = doc.data().likeCount - 1;
-  //             let newLikes = doc.data().likes;
-  //             newLikes[userId] = false;
-
-  //             transaction.update(hangoutMessage, {
-  //               likeCount: newLikeCount,
-  //               likes: newLikes,
-  //             });
-  //           });
-  //         })
-  //         .then(() => {
-  //           console.log("Succesfully Disliked");
-  //         })
-  //         .catch((error) => {
-  //           console.log("We found and error", error);
-  //         });
-  //     };
-  //   } else {
-  //     return () => {
-  //       database
-  //         .runTransaction((transaction) => {
-  //           return transaction.get(hangoutMessage).then((doc) => {
-  //             if (!doc) {
-  //               console.log("No Document Found");
-  //               return;
-  //             }
-
-  //             let newLikeCount = doc.data().likeCount + 1;
-  //             let newLikes = doc.data().likes;
-  //             newLikes[userId] = true;
-
-  //             transaction.update(hangoutMessage, {
-  //               likeCount: newLikeCount,
-  //               likes: newLikes,
-  //             });
-  //           });
-  //         })
-  //         .then(() => {
-  //           console.log("Succesfully Liked");
-  //         })
-  //         .catch((error) => {
-  //           console.log("We found and error", error);
-  //         });
-  //     };
-  //   }
-  // }
-
-  // function handleDeleteMessage(id) {
-  //   database
-  //     .collection("hangouts")
-  //     .doc(hangoutId)
-  //     .collection("messages")
-  //     .doc(id)
-  //     .delete()
-  //     .then(() => {
-  //       console.log("Succesfully Deleted Message");
-  //     })
-  //     .catch((error) => {
-  //       console.log("We found and error", error);
-  //     });
-  // }
-
-  // function handleDeleteModal() {
-  //   setDeleteModal(!deleteModal);
-  // }
+  function handleDeleteModal() {
+    setDeleteModal(!deleteModal);
+  }
 
   function handleMouseEnter() {
     setStyle({ display: "block" });
@@ -413,10 +261,7 @@ function Message({ messageData, hangoutMessageId }) {
       onMouseLeave={handleMouseLeave}
     >
       <div className={classes.message__content}>
-        <Avatar
-          src="https://firebasestorage.googleapis.com/v0/b/hangout-application.appspot.com/o/profilePictures%2F38b2c1b8b4703be9005df0dd694b2ae9.jpg?alt=media&token=b9b9b93f-0f00-41e9-a3b2-beb443c0b8e8"
-          className={classes.user__avatar}
-        />
+        <Avatar src={messageData.userAvatar} className={classes.user__avatar} />
 
         <div className={classes.message__info}>
           <div className={classes.top__messageContent}>
@@ -427,7 +272,7 @@ function Message({ messageData, hangoutMessageId }) {
                 paddingRight: "4px",
               }}
             >
-              Rick
+              {messageData.username}
             </Typography>
             <Typography
               variant="subtitle1"
@@ -435,94 +280,120 @@ function Message({ messageData, hangoutMessageId }) {
                 fontWeight: "500",
               }}
             >
-              30/5/2021 11:19
+              {time}
             </Typography>
           </div>
-          {/* <div className={classes.bottom__messageContent}>
-            Well, I am Rick and you cannot do a damn thing about it.
-          </div> */}
-          {/* <div className={classes.message__imageContainer}>
-            <img
-              src="https://i.pinimg.com/originals/9e/0c/d2/9e0cd25afaefd1993664eeb0d17f7171.jpg"
-              alt=""
-              className={classes.message__image}
-            />
-          </div> */}
-
-          {/* <div className={classes.video__container}>
-            <ReactPlayer
-              id="myVedio"
-              url={"https://youtu.be/sjvlW0AzKlY"}
-              width="65%"
-              height="90%"
-              playing={true}
-              controls={true}
-              volume={1}
-              progressInterval={5000}
-              pip={true}
-            />
-          </div> */}
-
-          <ThemeProvider theme={muiTheme}>
-            <div className={classes.audio__container}>
-              <AudioPlayer
-                elevation={1}
-                width="100%"
-                variation="default"
-                spacing={2}
-                order="standart"
-                preload="auto"
-                src={""}
-                useStyles={audioPlayerStyle}
+          <div className={classes.bottom__messageContent}>
+            {messageData.text}
+          </div>
+          {messageMedia && isImage(messageMedia) === true ? (
+            <div className={classes.message__imageContainer}>
+              <img
+                src={messageMedia}
+                alt=""
+                className={classes.message__image}
               />
             </div>
-          </ThemeProvider>
+          ) : null}
+
+          {messageMedia && isVideo(messageMedia) === true ? (
+            <div className={classes.video__container}>
+              <ReactPlayer
+                id="myVedio"
+                url={messageMedia}
+                width="65%"
+                height="90%"
+                playing={true}
+                controls={true}
+                volume={1}
+                progressInterval={5000}
+                pip={true}
+              />
+            </div>
+          ) : null}
+
+          {messageMedia && isAudio(messageMedia) === true ? (
+            <ThemeProvider theme={muiTheme}>
+              <div className={classes.audio__container}>
+                <AudioPlayer
+                  elevation={1}
+                  width="100%"
+                  variation="default"
+                  spacing={2}
+                  order="standart"
+                  preload="auto"
+                  src={messageMedia}
+                  useStyles={audioPlayerStyle}
+                />
+              </div>
+            </ThemeProvider>
+          ) : null}
 
           <div className={classes.emoji__countButtonContainer}>
-            <div className={classes.emoji__countButtondiv}>
-              <IconButton style={{ color: "green" }} size="small">
-                <AiFillLike className={classes.emoji__countButton} />
-                <Typography
-                  variant="subtitle2"
-                  className={classes.emoji__count}
+            {numLikes > 0 ? (
+              <div className={classes.emoji__countButtondiv}>
+                <IconButton
+                  style={selectedLike}
+                  onClick={handleLikeClick}
+                  size="small"
                 >
-                  1
-                </Typography>
-              </IconButton>
-            </div>
-            <div className={classes.emoji__countButtondiv}>
-              <IconButton style={{ color: "red" }} size="small">
-                <AiFillHeart className={classes.emoji__countButton} />
-                <Typography
-                  variant="subtitle2"
-                  className={classes.emoji__count}
+                  <AiFillLike className={classes.emoji__countButton} />
+                  <Typography
+                    variant="subtitle2"
+                    className={classes.emoji__count}
+                  >
+                    {numLikes}
+                  </Typography>
+                </IconButton>
+              </div>
+            ) : null}
+
+            {numHeart > 0 ? (
+              <div className={classes.emoji__countButtondiv}>
+                <IconButton
+                  style={selectedHeart}
+                  size="small"
+                  onClick={handleHeartClick}
                 >
-                  1
-                </Typography>
-              </IconButton>
-            </div>
-            <div className={classes.emoji__countButtondiv}>
-              <IconButton style={{ color: "orange" }} size="small">
-                <AiFillFire className={classes.emoji__countButton} />
-                <Typography
-                  variant="subtitle2"
-                  className={classes.emoji__count}
+                  <AiFillHeart className={classes.emoji__countButton} />
+                  <Typography
+                    variant="subtitle2"
+                    className={classes.emoji__count}
+                  >
+                    {numHeart}
+                  </Typography>
+                </IconButton>
+              </div>
+            ) : null}
+
+            {numFire > 0 ? (
+              <div className={classes.emoji__countButtondiv}>
+                <IconButton
+                  style={selectedFire}
+                  size="small"
+                  onClick={handleFireClick}
                 >
-                  1
-                </Typography>
-              </IconButton>
-            </div>
+                  <AiFillFire className={classes.emoji__countButton} />
+                  <Typography
+                    variant="subtitle2"
+                    className={classes.emoji__count}
+                  >
+                    {numFire}
+                  </Typography>
+                </IconButton>
+              </div>
+            ) : null}
           </div>
         </div>
 
         <div className={classes.message__emojiBtnContainer} style={style}>
-          <IconButton size="small">
+          <IconButton size="small" onClick={handleLikeClick}>
             <AiFillLike className={classes.emoji__button} />
           </IconButton>
-          <IconButton size="small">
+          <IconButton size="small" onClick={handleFireClick}>
             <AiFillFire className={classes.emoji__button} />
           </IconButton>
-          <IconButton size="small">
+          <IconButton size="small" onClick={handleHeartClick}>
             <AiFillHeart className={classes.emoji__button} />
           </IconButton>
           <IconButton size="small">

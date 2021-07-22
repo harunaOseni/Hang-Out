@@ -88,8 +88,6 @@ function HangoutLiveChat() {
   const [hangoutMessages, setHangoutMessages] = useState([]);
   const [fileUploadModalState, setFileUploadModalState] = useState(false);
 
-  console.log(hangoutMessages);
-
   useEffect(() => {
     if (parameter.id) {
       database
@@ -98,14 +96,7 @@ function HangoutLiveChat() {
         .onSnapshot((snapshot) => {
           setHangoutName(snapshot.data().hangoutName);
         });
-    }
 
-    setUserMessage("");
-    setEmojiState(false);
-  }, [parameter]);
-
-  useEffect(() => {
-    if (parameter.id) {
       database
         .collection("hangouts")
         .doc(parameter.id)
@@ -122,6 +113,9 @@ function HangoutLiveChat() {
           );
         });
     }
+
+    setUserMessage("");
+    setEmojiState(false);
   }, [parameter]);
 
   function handleFileUploadModal() {
@@ -216,14 +210,15 @@ function HangoutLiveChat() {
       </Grid>
       <div className={classes.message__feed}>
         <ScrollableFeed>
-          {hangoutMessages.map((hangoutMessage) => (
-            <Message
-              key={hangoutMessage.id}
-              hangoutMessageId={hangoutMessage.id}
-              messageData={hangoutMessage.data}
-            />
-          ))}
-          <Message />
+          {hangoutMessages.map((message) => {
+            return (
+              <Message
+                key={message.id}
+                messageId={message.id}
+                messageData={message.data}
+              />
+            );
+          })}
         </ScrollableFeed>
       </div>
       <div className={classes.textActionField}>
